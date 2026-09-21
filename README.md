@@ -1,4 +1,4 @@
-# 🏀 BasketBall LiveScore
+# 🏀 NBA LiveScore
 
 A modern, high-performance, real-time web application for tracking basketball matches, live scores, and team standings.
 
@@ -44,13 +44,13 @@ This project combines an **Angular 17** frontend with a robust **ASP.NET Core 8*
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/BasketBall_LiveScore.git
-cd BasketBall_LiveScore
+git clone https://github.com/your-username/NBA_LiveScore.git
+cd NBA_LiveScore
 ```
 
 ### 2. Setup the Backend (.NET)
 ```bash
-cd BasketBall_LiveScore.Server
+cd NBA_LiveScore.Server
 dotnet restore
 dotnet run
 ```
@@ -58,7 +58,7 @@ The API will run on `http://localhost:61961` (or the port specified in `launchSe
 
 ### 3. Setup the Frontend (Angular)
 ```bash
-cd ../basketball_livescore.client
+cd ../NBA_LiveScore.client
 npm install
 npm start
 ```

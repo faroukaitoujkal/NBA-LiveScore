@@ -1,0 +1,6 @@
+@NBA_LiveScore.Server_HostAddress = https://localhost:7088
+
+GET {{NBA_LiveScore.Server_HostAddress}}/api/teams
+Accept: application/json
+
+###
