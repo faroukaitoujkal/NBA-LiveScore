@@ -22,8 +22,14 @@ export class AppComponent implements OnInit {
     private translate: TranslateService,
     private themeService: ThemeService
   ) { 
+    translate.addLangs(['fr', 'en']);
     translate.setDefaultLang('fr');
-    translate.use('fr');
+    
+    const savedLang = localStorage.getItem('language');
+    const browserLang = translate.getBrowserLang();
+    const langToUse = savedLang ? savedLang : (browserLang?.match(/en|fr/) ? browserLang : 'fr');
+    
+    translate.use(langToUse);
   }
 
   ngOnInit(): void {

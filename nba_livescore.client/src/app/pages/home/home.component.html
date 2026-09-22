@@ -16,6 +16,27 @@
         <h1 class="text-4xl md:text-5xl font-sports tracking-tighter uppercase text-brand-text font-black mb-2 drop-shadow-lg">
           {{ 'HOME.HERO_TITLE' | translate }} <span class="text-brand-accent">{{ 'HOME.HERO_TITLE_ACCENT' | translate }}</span>
         </h1>
+        
+        <!-- Dynamic Live / Upcoming Status -->
+        <div class="mt-4 mb-4 flex items-center space-x-2">
+          <ng-container *ngIf="(liveMatches.length + liveEspnMatches.length) > 0; else showUpcoming">
+            <div class="flex items-center px-3 py-1.5 bg-brand-danger/20 border border-brand-danger/50 rounded-md">
+              <div class="w-2 h-2 bg-brand-danger rounded-full animate-pulse mr-2"></div>
+              <span class="text-brand-danger font-sports uppercase tracking-widest text-sm font-bold">
+                {{ liveMatches.length + liveEspnMatches.length }} {{ 'HOME.HERO_LIVE_NOW' | translate }}
+              </span>
+            </div>
+          </ng-container>
+          <ng-template #showUpcoming>
+            <div *ngIf="upcomingEspnMatches.length > 0" class="flex items-center px-3 py-1.5 bg-brand-accent/20 border border-brand-accent/50 rounded-md">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-brand-accent mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span class="text-brand-accent font-sports uppercase tracking-widest text-sm font-bold">
+                {{ 'HOME.HERO_NEXT_MATCH' | translate }}: {{ upcomingEspnMatches[0].competitions[0].competitors[0].team.shortDisplayName }} vs {{ upcomingEspnMatches[0].competitions[0].competitors[1].team.shortDisplayName }}
+              </span>
+            </div>
+          </ng-template>
+        </div>
+
         <p class="text-brand-text-muted text-sm md:text-base max-w-lg font-medium">
           {{ 'HOME.HERO_DESC' | translate }}
         </p>

@@ -54,18 +54,21 @@ export class SignalrService {
   }
 
   private listenToScoreUpdates(): void {
+    this.hubConnection.off('ScoreUpdated');
     this.hubConnection.on('ScoreUpdated', (data: any) => {
       this.scoreUpdatedSource.next(data);
     });
   }
 
   private listenToTimeoutCreated(): void {
+    this.hubConnection.off('TimeoutCreated');
     this.hubConnection.on('TimeoutCreated', (data: any) => {
       this.timeoutCreatedSource.next(data);
     });
   }
 
   listenForQuarterUpdates(): void {
+    this.hubConnection.off('QuarterUpdated');
     this.hubConnection.on('QuarterUpdated', (quarter: number) => {
       this._currentQuarterUpdated.next(quarter); 
     });

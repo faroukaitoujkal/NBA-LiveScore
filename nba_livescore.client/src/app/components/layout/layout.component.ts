@@ -31,5 +31,6 @@ export class LayoutComponent {
 
   switchLanguage(lang: string) {
     this.translate.use(lang);
+    localStorage.setItem('language', lang);
   }
 }

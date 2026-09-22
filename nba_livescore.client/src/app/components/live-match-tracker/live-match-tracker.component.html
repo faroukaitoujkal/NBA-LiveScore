@@ -85,44 +85,12 @@
     </div>
   </div>
 
-  <!-- Play-by-Play & Stats Section -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-slide-up">
-    <!-- Play by play -->
-    <div class="lg:col-span-2 bg-brand-card border border-brand-border rounded-xl shadow-lg p-6">
-      <h3 class="font-sports text-2xl uppercase tracking-widest font-bold text-brand-text mb-6 flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-accent mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-        {{ 'LIVE_TRACKER.PLAY_BY_PLAY' | translate }}
-      </h3>
-      
-      <div class="space-y-4">
-        <!-- Real Events -->
-        <div *ngIf="recentEvents.length === 0" class="text-brand-text-muted text-sm font-sports uppercase tracking-widest text-center py-8">
-           {{ 'LIVE_TRACKER.NO_EVENTS' | translate }}
-        </div>
-        <div *ngFor="let ev of recentEvents" class="flex items-start space-x-4 p-4 bg-brand-dark/30 rounded-lg border-l-4" 
-             [ngClass]="{
-               'border-l-brand-accent': ev.isHome, 
-               'border-l-brand-border': !ev.isHome && ev.type !== 'TIMEOUT',
-               'border-l-brand-text-muted': ev.type === 'TIMEOUT'
-             }">
-          <div class="font-sports font-bold text-brand-text-muted w-16 shrink-0 text-sm mt-1">{{ ev.timeString }}</div>
-          <div class="flex-1">
-            <p class="text-brand-text font-medium">
-              <span *ngIf="ev.teamName !== 'MATCH'" class="font-bold mr-2" [ngClass]="ev.isHome ? 'text-brand-accent' : ''">{{ ev.teamName }}</span>
-              <span [ngClass]="{
-                'text-brand-success': ev.type === 'SCORE',
-                'text-brand-danger': ev.type === 'FOUL',
-                'text-brand-text-muted': ev.type === 'SUB',
-                'text-brand-accent': ev.type === 'TIMEOUT'
-              }">{{ ev.translationKey | translate:ev.translationParams }}</span>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+  <!-- Play-by-Play, Stats & Encoder Section -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-slide-up relative">
 
-    <!-- Match Stats -->
-    <div class="bg-brand-card border border-brand-border rounded-xl shadow-lg p-6">
+
+    <!-- Match Stats (Left Column) -->
+    <div class="lg:col-span-3 bg-brand-card border border-brand-border rounded-xl shadow-lg p-6 h-fit">
        <h3 class="font-sports text-2xl uppercase tracking-widest font-bold text-brand-text mb-6 flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-accent mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
         {{ 'LIVE_TRACKER.TEAM_STATS' | translate }}
@@ -169,144 +137,191 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Complete Simulation Control Panel -->
-  <div class="fixed bottom-6 right-6 bg-brand-card border-2 border-brand-accent rounded-lg shadow-2xl z-50 w-96 overflow-hidden flex flex-col max-h-[80vh]">
-    <!-- Header -->
-    <div class="bg-brand-dark px-4 py-3 border-b border-brand-border flex justify-between items-center relative">
-      <span class="text-xs font-sports text-brand-accent uppercase tracking-widest font-bold">{{ 'LIVE_TRACKER.ENCODER.TITLE' | translate }}</span>
-      <input type="text" [(ngModel)]="gameTimeInput" class="w-16 bg-brand-card text-brand-text border border-brand-border rounded px-1 text-center font-sports text-xs" placeholder="MM:SS">
+    <!-- Play by play (Center Column) -->
+    <div class="lg:col-span-5 bg-brand-card border border-brand-border rounded-xl shadow-lg p-6 h-fit">
+      <h3 class="font-sports text-2xl uppercase tracking-widest font-bold text-brand-text mb-6 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-accent mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+        {{ 'LIVE_TRACKER.PLAY_BY_PLAY' | translate }}
+      </h3>
       
-      <!-- Feedback Toast -->
-      <div *ngIf="feedback" 
-           class="absolute top-full left-0 w-full px-4 py-2 text-xs font-sports uppercase tracking-widest text-center animate-fade-in z-50 shadow-md"
-           [ngClass]="feedback.isError ? 'bg-brand-danger text-white' : 'bg-brand-success text-brand-dark'">
-        {{ feedback.message | translate }}
+      <div class="space-y-4">
+        <!-- Real Events -->
+        <div *ngIf="recentEvents.length === 0" class="text-brand-text-muted text-sm font-sports uppercase tracking-widest text-center py-8">
+           {{ 'LIVE_TRACKER.NO_EVENTS' | translate }}
+        </div>
+        <div *ngFor="let ev of recentEvents" class="flex items-start space-x-4 p-4 bg-brand-dark/30 rounded-lg border-l-4" 
+             [ngClass]="{
+               'border-l-brand-accent': ev.isHome, 
+               'border-l-brand-border': !ev.isHome && ev.type !== 'TIMEOUT',
+               'border-l-brand-text-muted': ev.type === 'TIMEOUT'
+             }">
+          <div class="font-sports font-bold text-brand-text-muted w-16 shrink-0 text-sm mt-1">{{ ev.timeString }}</div>
+          <div class="flex-1">
+            <p class="text-brand-text font-medium">
+              <span *ngIf="ev.teamName !== 'MATCH'" class="font-bold mr-2" [ngClass]="ev.isHome ? 'text-brand-accent' : ''">{{ ev.teamName }}</span>
+              <span [ngClass]="{
+                'text-brand-success': ev.type === 'SCORE',
+                'text-brand-danger': ev.type === 'FOUL',
+                'text-brand-text-muted': ev.type === 'SUB',
+                'text-brand-accent': ev.type === 'TIMEOUT'
+              }">{{ ev.translationKey | translate:ev.translationParams }}</span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
-    
-    <!-- Tabs Navigation -->
-    <div class="flex border-b border-brand-border text-xs font-sports uppercase tracking-widest bg-brand-dark/50">
-      <button (click)="setTab('POINTS')" [class.text-brand-accent]="activeTab === 'POINTS'" [class.border-b-2]="activeTab === 'POINTS'" class="flex-1 py-2 hover:bg-brand-card transition-colors border-brand-accent">{{ 'LIVE_TRACKER.ENCODER.TABS.PTS' | translate }}</button>
-      <button (click)="setTab('FOULS')" [class.text-brand-accent]="activeTab === 'FOULS'" [class.border-b-2]="activeTab === 'FOULS'" class="flex-1 py-2 hover:bg-brand-card transition-colors border-brand-accent">{{ 'LIVE_TRACKER.ENCODER.TABS.FLS' | translate }}</button>
-      <button (click)="setTab('SUBS')" [class.text-brand-accent]="activeTab === 'SUBS'" [class.border-b-2]="activeTab === 'SUBS'" class="flex-1 py-2 hover:bg-brand-card transition-colors border-brand-accent">{{ 'LIVE_TRACKER.ENCODER.TABS.SUB' | translate }}</button>
-      <button (click)="setTab('TIMEOUTS')" [class.text-brand-accent]="activeTab === 'TIMEOUTS'" [class.border-b-2]="activeTab === 'TIMEOUTS'" class="flex-1 py-2 hover:bg-brand-card transition-colors border-brand-accent">{{ 'LIVE_TRACKER.ENCODER.TABS.TO' | translate }}</button>
-      <button (click)="setTab('MATCH')" [class.text-brand-accent]="activeTab === 'MATCH'" [class.border-b-2]="activeTab === 'MATCH'" class="flex-1 py-2 hover:bg-brand-card transition-colors border-brand-accent">{{ 'LIVE_TRACKER.ENCODER.TABS.MCH' | translate }}</button>
-    </div>
 
-    <!-- Tab Content Area -->
-    <div class="p-4 overflow-y-auto">
-      
-      <!-- TAB: POINTS -->
-      <div *ngIf="activeTab === 'POINTS'" class="space-y-4">
-        <!-- Home Team Points -->
-        <div class="flex flex-col space-y-2">
-          <span class="text-xs font-sports uppercase tracking-widest text-brand-text-muted">{{ match.homeTeam?.name }}</span>
-          <select class="bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedHomePlayerId">
-            <option [ngValue]="null">{{ 'LIVE_TRACKER.ENCODER.SELECT_PLAYER' | translate }}</option>
-            <option *ngFor="let p of match.homeTeam?.players" [value]="p.id">{{ p.name }}</option>
-          </select>
-          <div class="flex space-x-2">
-            <button (click)="addRealScore('home', 1)" [disabled]="isSubmitting" class="flex-1 py-1.5 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">+1</button>
-            <button (click)="addRealScore('home', 2)" [disabled]="isSubmitting" class="flex-1 py-1.5 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">+2</button>
-            <button (click)="addRealScore('home', 3)" [disabled]="isSubmitting" class="flex-1 py-1.5 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">+3</button>
+    <!-- Complete Simulation Control Panel (Right Column) -->
+    <div class="lg:col-span-4 h-fit sticky top-6">
+      <div class="bg-brand-card border-2 border-brand-accent rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative">
+        
+        <!-- Finished Overlay -->
+        <div *ngIf="match?.status === MatchStatus.Finished" class="absolute inset-0 bg-brand-dark/80 backdrop-blur-sm z-[200] flex flex-col items-center justify-center p-8 text-center">
+           <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-brand-text-muted mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+           <h4 class="font-sports text-xl uppercase tracking-widest font-bold text-brand-text mb-2">{{ 'HOME.FINISHED' | translate }}</h4>
+           <p class="text-brand-text-muted text-sm font-bold uppercase tracking-widest">ENCODING DISABLED</p>
+        </div>
+
+        <!-- Header -->
+        <div class="bg-brand-dark px-4 py-3 border-b border-brand-border flex justify-between items-center relative overflow-hidden">
+          <span class="text-xs font-sports text-brand-accent uppercase tracking-widest font-bold flex items-center">
+            <div class="w-2 h-2 bg-brand-danger rounded-full animate-pulse mr-2"></div>
+            ENCODER COMMAND CENTER
+          </span>
+          <input type="text" [(ngModel)]="gameTimeInput" class="w-16 bg-brand-card text-brand-text border border-brand-border rounded px-1 text-center font-sports text-xs" placeholder="MM:SS">
+          
+          <!-- Feedback Overlay in Header -->
+          <div *ngIf="feedback" 
+               class="absolute inset-0 flex items-center justify-center text-xs font-sports uppercase tracking-widest font-bold animate-fade-in z-10 shadow-inner"
+               [ngClass]="feedback.isError ? 'bg-brand-danger text-white' : 'bg-brand-success text-brand-dark'">
+            {{ feedback.message | translate }}
           </div>
         </div>
-        <hr class="border-brand-border border-dashed">
-        <!-- Away Team Points -->
-        <div class="flex flex-col space-y-2">
-          <span class="text-xs font-sports uppercase tracking-widest text-brand-text-muted">{{ match.awayTeam?.name }}</span>
-          <select class="bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedAwayPlayerId">
-            <option [ngValue]="null">{{ 'LIVE_TRACKER.ENCODER.SELECT_PLAYER' | translate }}</option>
-            <option *ngFor="let p of match.awayTeam?.players" [value]="p.id">{{ p.name }}</option>
-          </select>
-          <div class="flex space-x-2">
-            <button (click)="addRealScore('away', 1)" [disabled]="isSubmitting" class="flex-1 py-1.5 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">+1</button>
-            <button (click)="addRealScore('away', 2)" [disabled]="isSubmitting" class="flex-1 py-1.5 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">+2</button>
-            <button (click)="addRealScore('away', 3)" [disabled]="isSubmitting" class="flex-1 py-1.5 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">+3</button>
-          </div>
+        
+        <!-- Tabs Navigation -->
+        <div class="flex border-b border-brand-border text-xs font-sports uppercase tracking-widest bg-brand-dark/50">
+          <button (click)="setTab('POINTS')" [class.text-brand-accent]="activeTab === 'POINTS'" [class.border-b-2]="activeTab === 'POINTS'" class="flex-1 py-2 hover:bg-brand-card transition-colors border-brand-accent">{{ 'LIVE_TRACKER.ENCODER.TABS.PTS' | translate }}</button>
+          <button (click)="setTab('FOULS')" [class.text-brand-accent]="activeTab === 'FOULS'" [class.border-b-2]="activeTab === 'FOULS'" class="flex-1 py-2 hover:bg-brand-card transition-colors border-brand-accent">{{ 'LIVE_TRACKER.ENCODER.TABS.FLS' | translate }}</button>
+          <button (click)="setTab('SUBS')" [class.text-brand-accent]="activeTab === 'SUBS'" [class.border-b-2]="activeTab === 'SUBS'" class="flex-1 py-2 hover:bg-brand-card transition-colors border-brand-accent">{{ 'LIVE_TRACKER.ENCODER.TABS.SUB' | translate }}</button>
+          <button (click)="setTab('TIMEOUTS')" [class.text-brand-accent]="activeTab === 'TIMEOUTS'" [class.border-b-2]="activeTab === 'TIMEOUTS'" class="flex-1 py-2 hover:bg-brand-card transition-colors border-brand-accent">{{ 'LIVE_TRACKER.ENCODER.TABS.TO' | translate }}</button>
+          <button (click)="setTab('MATCH')" [class.text-brand-accent]="activeTab === 'MATCH'" [class.border-b-2]="activeTab === 'MATCH'" class="flex-1 py-2 hover:bg-brand-card transition-colors border-brand-accent">{{ 'LIVE_TRACKER.ENCODER.TABS.MCH' | translate }}</button>
         </div>
-      </div>
 
-      <!-- TAB: FOULS -->
-      <div *ngIf="activeTab === 'FOULS'" class="space-y-4">
-        <select class="w-full bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedFoulType">
-          <option value="P0">Personal Foul (P0)</option>
-          <option value="P1">Personal Foul (P1)</option>
-          <option value="P2">Personal Foul (P2)</option>
-          <option value="P3">Personal Foul (P3)</option>
-          <option value="T">Technical Foul (T)</option>
-        </select>
+        <!-- Tab Content Area -->
+        <div class="p-4 overflow-y-auto">
+          
+          <!-- TAB: POINTS -->
+          <div *ngIf="activeTab === 'POINTS'" class="space-y-4">
+            <!-- Home Team Points -->
+            <div class="flex flex-col space-y-2">
+              <span class="text-xs font-sports uppercase tracking-widest text-brand-text-muted">{{ match.homeTeam?.name }}</span>
+              <select class="bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedHomePlayerId">
+                <option [ngValue]="null">{{ 'LIVE_TRACKER.ENCODER.SELECT_PLAYER' | translate }}</option>
+                <option *ngFor="let p of match.homeTeam?.players" [value]="p.id">{{ p.name }}</option>
+              </select>
+              <div class="flex space-x-2">
+                <button (click)="addRealScore('home', 1)" [disabled]="isSubmitting" class="flex-1 py-1.5 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">+1</button>
+                <button (click)="addRealScore('home', 2)" [disabled]="isSubmitting" class="flex-1 py-1.5 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">+2</button>
+                <button (click)="addRealScore('home', 3)" [disabled]="isSubmitting" class="flex-1 py-1.5 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">+3</button>
+              </div>
+            </div>
+            <hr class="border-brand-border border-dashed">
+            <!-- Away Team Points -->
+            <div class="flex flex-col space-y-2">
+              <span class="text-xs font-sports uppercase tracking-widest text-brand-text-muted">{{ match.awayTeam?.name }}</span>
+              <select class="bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedAwayPlayerId">
+                <option [ngValue]="null">{{ 'LIVE_TRACKER.ENCODER.SELECT_PLAYER' | translate }}</option>
+                <option *ngFor="let p of match.awayTeam?.players" [value]="p.id">{{ p.name }}</option>
+              </select>
+              <div class="flex space-x-2">
+                <button (click)="addRealScore('away', 1)" [disabled]="isSubmitting" class="flex-1 py-1.5 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">+1</button>
+                <button (click)="addRealScore('away', 2)" [disabled]="isSubmitting" class="flex-1 py-1.5 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">+2</button>
+                <button (click)="addRealScore('away', 3)" [disabled]="isSubmitting" class="flex-1 py-1.5 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">+3</button>
+              </div>
+            </div>
+          </div>
 
-        <div class="flex flex-col space-y-2">
-          <span class="text-xs font-sports uppercase tracking-widest text-brand-text-muted">{{ match.homeTeam?.name }}</span>
-          <div class="flex space-x-2">
-            <select class="flex-1 bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedHomePlayerId">
-              <option [ngValue]="null">{{ 'LIVE_TRACKER.ENCODER.SELECT_PLAYER' | translate }}</option>
-              <option *ngFor="let p of match.homeTeam?.players" [value]="p.id">{{ p.name }}</option>
+          <!-- TAB: FOULS -->
+          <div *ngIf="activeTab === 'FOULS'" class="space-y-4">
+            <select class="w-full bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedFoulType">
+              <option value="P0">Personal Foul (P0)</option>
+              <option value="P1">Personal Foul (P1)</option>
+              <option value="P2">Personal Foul (P2)</option>
+              <option value="P3">Personal Foul (P3)</option>
+              <option value="T">Technical Foul (T)</option>
             </select>
-            <button (click)="addFoul('home')" [disabled]="isSubmitting" class="px-3 bg-brand-danger text-white rounded font-sports font-bold text-sm hover:opacity-90 disabled:opacity-50">{{ 'LIVE_TRACKER.ENCODER.FOUL_BTN' | translate }}</button>
+
+            <div class="flex flex-col space-y-2">
+              <span class="text-xs font-sports uppercase tracking-widest text-brand-text-muted">{{ match.homeTeam?.name }}</span>
+              <div class="flex space-x-2">
+                <select class="flex-1 bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedHomePlayerId">
+                  <option [ngValue]="null">{{ 'LIVE_TRACKER.ENCODER.SELECT_PLAYER' | translate }}</option>
+                  <option *ngFor="let p of match.homeTeam?.players" [value]="p.id">{{ p.name }}</option>
+                </select>
+                <button (click)="addFoul('home')" [disabled]="isSubmitting" class="px-3 bg-brand-danger text-white rounded font-sports font-bold text-sm hover:opacity-90 disabled:opacity-50">{{ 'LIVE_TRACKER.ENCODER.FOUL_BTN' | translate }}</button>
+              </div>
+            </div>
+
+            <div class="flex flex-col space-y-2 pt-2 border-t border-brand-border border-dashed">
+              <span class="text-xs font-sports uppercase tracking-widest text-brand-text-muted">{{ match.awayTeam?.name }}</span>
+              <div class="flex space-x-2">
+                <select class="flex-1 bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedAwayPlayerId">
+                  <option [ngValue]="null">{{ 'LIVE_TRACKER.ENCODER.SELECT_PLAYER' | translate }}</option>
+                  <option *ngFor="let p of match.awayTeam?.players" [value]="p.id">{{ p.name }}</option>
+                </select>
+                <button (click)="addFoul('away')" [disabled]="isSubmitting" class="px-3 bg-brand-danger text-white rounded font-sports font-bold text-sm hover:opacity-90 disabled:opacity-50">{{ 'LIVE_TRACKER.ENCODER.FOUL_BTN' | translate }}</button>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div class="flex flex-col space-y-2 pt-2 border-t border-brand-border border-dashed">
-          <span class="text-xs font-sports uppercase tracking-widest text-brand-text-muted">{{ match.awayTeam?.name }}</span>
-          <div class="flex space-x-2">
-            <select class="flex-1 bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedAwayPlayerId">
-              <option [ngValue]="null">{{ 'LIVE_TRACKER.ENCODER.SELECT_PLAYER' | translate }}</option>
-              <option *ngFor="let p of match.awayTeam?.players" [value]="p.id">{{ p.name }}</option>
-            </select>
-            <button (click)="addFoul('away')" [disabled]="isSubmitting" class="px-3 bg-brand-danger text-white rounded font-sports font-bold text-sm hover:opacity-90 disabled:opacity-50">{{ 'LIVE_TRACKER.ENCODER.FOUL_BTN' | translate }}</button>
+          <!-- TAB: SUBS -->
+          <div *ngIf="activeTab === 'SUBS'" class="space-y-4">
+            <div class="text-xs font-sports text-brand-text-muted text-center">{{ 'LIVE_TRACKER.ENCODER.HOME_SUB' | translate }}</div>
+            <div class="flex flex-col space-y-2">
+              <label class="text-xs text-brand-danger font-bold uppercase">{{ 'LIVE_TRACKER.ENCODER.PLAYER_OUT' | translate }}</label>
+              <select class="bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedPlayerOutId">
+                <option [ngValue]="null">{{ 'LIVE_TRACKER.ENCODER.SELECT_PLAYER_OUT' | translate }}</option>
+                <option *ngFor="let p of match.homeTeam?.players" [value]="p.id">{{ p.name }}</option>
+              </select>
+            </div>
+            <div class="flex flex-col space-y-2">
+              <label class="text-xs text-brand-success font-bold uppercase">{{ 'LIVE_TRACKER.ENCODER.PLAYER_IN' | translate }}</label>
+              <select class="bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedPlayerInId">
+                <option [ngValue]="null">{{ 'LIVE_TRACKER.ENCODER.SELECT_PLAYER_IN' | translate }}</option>
+                <option *ngFor="let p of match.homeTeam?.players" [value]="p.id">{{ p.name }}</option>
+              </select>
+            </div>
+            <button (click)="recordSub()" [disabled]="isSubmitting || !selectedPlayerInId || !selectedPlayerOutId" class="w-full py-2 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">{{ 'LIVE_TRACKER.ENCODER.RECORD_SUB' | translate }}</button>
           </div>
-        </div>
-      </div>
 
-      <!-- TAB: SUBS -->
-      <div *ngIf="activeTab === 'SUBS'" class="space-y-4">
-        <div class="text-xs font-sports text-brand-text-muted text-center">{{ 'LIVE_TRACKER.ENCODER.HOME_SUB' | translate }}</div>
-        <div class="flex flex-col space-y-2">
-          <label class="text-xs text-brand-danger font-bold uppercase">{{ 'LIVE_TRACKER.ENCODER.PLAYER_OUT' | translate }}</label>
-          <select class="bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedPlayerOutId">
-            <option [ngValue]="null">{{ 'LIVE_TRACKER.ENCODER.SELECT_PLAYER_OUT' | translate }}</option>
-            <option *ngFor="let p of match.homeTeam?.players" [value]="p.id">{{ p.name }}</option>
-          </select>
-        </div>
-        <div class="flex flex-col space-y-2">
-          <label class="text-xs text-brand-success font-bold uppercase">{{ 'LIVE_TRACKER.ENCODER.PLAYER_IN' | translate }}</label>
-          <select class="bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="selectedPlayerInId">
-            <option [ngValue]="null">{{ 'LIVE_TRACKER.ENCODER.SELECT_PLAYER_IN' | translate }}</option>
-            <option *ngFor="let p of match.homeTeam?.players" [value]="p.id">{{ p.name }}</option>
-          </select>
-        </div>
-        <button (click)="recordSub()" [disabled]="isSubmitting || !selectedPlayerInId || !selectedPlayerOutId" class="w-full py-2 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">{{ 'LIVE_TRACKER.ENCODER.RECORD_SUB' | translate }}</button>
-      </div>
+          <!-- TAB: TIMEOUTS -->
+          <div *ngIf="activeTab === 'TIMEOUTS'" class="space-y-4">
+            <div class="flex flex-col space-y-2">
+              <label class="text-xs text-brand-text-muted font-bold uppercase">{{ 'LIVE_TRACKER.ENCODER.DURATION' | translate }}</label>
+              <select class="bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="timeoutDuration">
+                <option value="00:30">30 Seconds</option>
+                <option value="01:00">1 Minute</option>
+                <option value="02:00">2 Minutes</option>
+              </select>
+            </div>
+            <button (click)="callTimeout()" [disabled]="isSubmitting" class="w-full py-3 bg-brand-accent text-white font-sports font-bold text-lg rounded shadow-glow hover:opacity-90 transition-opacity disabled:opacity-50">
+              {{ 'LIVE_TRACKER.ENCODER.CALL_TIMEOUT' | translate }}
+            </button>
+          </div>
 
-      <!-- TAB: TIMEOUTS -->
-      <div *ngIf="activeTab === 'TIMEOUTS'" class="space-y-4">
-        <div class="flex flex-col space-y-2">
-          <label class="text-xs text-brand-text-muted font-bold uppercase">{{ 'LIVE_TRACKER.ENCODER.DURATION' | translate }}</label>
-          <select class="bg-brand-dark text-brand-text border border-brand-border rounded p-2 text-sm" [(ngModel)]="timeoutDuration">
-            <option value="00:30">30 Seconds</option>
-            <option value="01:00">1 Minute</option>
-            <option value="02:00">2 Minutes</option>
-          </select>
+          <!-- TAB: MATCH -->
+          <div *ngIf="activeTab === 'MATCH'" class="space-y-4">
+            <button (click)="nextQuarter()" [disabled]="isSubmitting || match.status === MatchStatus.Finished" class="w-full py-3 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">
+              {{ 'LIVE_TRACKER.ENCODER.NEXT_QUARTER' | translate:{quarter: match.currentQuarter} }}
+            </button>
+            <button (click)="finishMatch()" [disabled]="isSubmitting || match.status === MatchStatus.Finished" class="w-full py-3 bg-brand-danger text-white font-sports font-bold text-sm rounded hover:opacity-90 transition-opacity disabled:opacity-50">
+              {{ 'LIVE_TRACKER.ENCODER.END_MATCH' | translate }}
+            </button>
+          </div>
+          
         </div>
-        <button (click)="callTimeout()" [disabled]="isSubmitting" class="w-full py-3 bg-brand-accent text-white font-sports font-bold text-lg rounded shadow-glow hover:opacity-90 transition-opacity disabled:opacity-50">
-          {{ 'LIVE_TRACKER.ENCODER.CALL_TIMEOUT' | translate }}
-        </button>
       </div>
-
-      <!-- TAB: MATCH -->
-      <div *ngIf="activeTab === 'MATCH'" class="space-y-4">
-        <button (click)="nextQuarter()" [disabled]="isSubmitting || match.status === MatchStatus.Finished" class="w-full py-3 bg-brand-card-hover text-brand-text font-sports font-bold text-sm rounded border border-brand-border hover:border-brand-accent transition-colors disabled:opacity-50">
-          {{ 'LIVE_TRACKER.ENCODER.NEXT_QUARTER' | translate:{quarter: match.currentQuarter} }}
-        </button>
-        <button (click)="finishMatch()" [disabled]="isSubmitting || match.status === MatchStatus.Finished" class="w-full py-3 bg-brand-danger text-white font-sports font-bold text-sm rounded hover:opacity-90 transition-opacity disabled:opacity-50">
-          {{ 'LIVE_TRACKER.ENCODER.END_MATCH' | translate }}
-        </button>
-      </div>
-      
     </div>
   </div>
 
@@ -314,4 +329,34 @@
 
 <div *ngIf="!loading && !match" class="text-center p-16 bg-brand-card/50 rounded-sm border border-brand-border border-dashed">
   <p class="text-brand-text-muted font-sports text-2xl uppercase tracking-widest font-bold">{{ 'LIVE_TRACKER.MATCH_NOT_FOUND' | translate }}</p>
+</div>
+
+<!-- Overtime Confirmation Modal -->
+<div *ngIf="showOvertimeConfirm" class="fixed inset-0 bg-brand-dark/90 backdrop-blur-sm z-[999] flex items-center justify-center p-4 animate-fade-in">
+  <div class="bg-brand-card border-2 border-brand-accent rounded-xl shadow-[0_0_50px_rgba(255,87,34,0.3)] max-w-lg w-full overflow-hidden animate-slide-up">
+    <div class="bg-brand-accent/20 border-b border-brand-accent/30 p-6 flex items-center">
+      <div class="w-12 h-12 rounded-full bg-brand-accent/20 flex items-center justify-center mr-4 shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <div>
+        <h3 class="font-sports text-2xl uppercase tracking-widest font-bold text-brand-text">Attention : Prolongations</h3>
+        <p class="text-brand-accent text-sm font-bold uppercase tracking-widest mt-1">Action Requise</p>
+      </div>
+    </div>
+    <div class="p-8">
+      <p class="text-brand-text-muted text-lg font-medium leading-relaxed mb-8">
+        Le match a déjà atteint les 4 quarts-temps réglementaires. Voulez-vous vraiment lancer les <strong class="text-brand-text">prolongations (Overtime)</strong> ?
+      </p>
+      <div class="flex space-x-4">
+        <button (click)="cancelOvertime()" class="flex-1 py-3 px-6 bg-brand-card hover:bg-brand-card-hover text-brand-text font-sports font-bold text-lg rounded-sm border border-brand-border transition-colors uppercase tracking-widest">
+          Annuler
+        </button>
+        <button (click)="nextQuarter(true)" class="flex-1 py-3 px-6 bg-brand-accent hover:bg-brand-accent-hover text-white font-sports font-bold text-lg rounded-sm shadow-glow transition-all uppercase tracking-widest">
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

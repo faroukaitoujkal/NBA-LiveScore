@@ -340,15 +340,19 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
     });
   }
 
-  nextQuarter() {
+  showOvertimeConfirm = false;
+
+  nextQuarter(forceOvertime = false) {
     if (!this.match || this.isSubmitting) return;
     
-    if (this.match.currentQuarter >= 4) {
-       if (!confirm("Attention : Le match a déjà atteint les 4 quarts-temps réglementaires. Voulez-vous vraiment lancer les prolongations (Overtime) ?")) {
-         return;
-       }
+    if (this.match.currentQuarter >= 4 && !forceOvertime) {
+       this.showOvertimeConfirm = true;
+       document.body.style.overflow = 'hidden';
+       return;
     }
 
+    this.showOvertimeConfirm = false;
+    document.body.style.overflow = '';
     this.isSubmitting = true;
     this.matchService.updateCurrentQuarter(this.match.id, this.match.currentQuarter + 1).subscribe({
       next: () => { 
@@ -358,6 +362,11 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
       },
       error: (err) => { console.error(err); this.isSubmitting = false; this.showFeedback("LIVE_TRACKER.FEEDBACK.UPDATE_ERROR", true); }
     });
+  }
+
+  cancelOvertime() {
+    this.showOvertimeConfirm = false;
+    document.body.style.overflow = '';
   }
 
   finishMatch() {
@@ -378,5 +387,6 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
     if (this.scoreSubscription) {
       this.scoreSubscription.unsubscribe();
     }
+    document.body.style.overflow = '';
   }
 }

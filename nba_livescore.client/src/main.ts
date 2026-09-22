@@ -1,3 +1,4 @@
+import { inject } from '@vercel/analytics';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/components/app/app.component';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
@@ -10,6 +11,8 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
+
+inject();
 
 bootstrapApplication(AppComponent, {
   providers: [
