@@ -3,11 +3,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://NBA_LIVESCORE_API_URL/api/$1"
+      "destination": "https://nba-livescore-api.onrender.com/api/$1"
     },
     {
       "source": "/NBAHub(.*)",
-      "destination": "https://NBA_LIVESCORE_API_URL/NBAHub$1"
+      "destination": "https://nba-livescore-api.onrender.com/NBAHub$1"
     },
     {
       "source": "/(.*)",
