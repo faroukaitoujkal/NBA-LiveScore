@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll",
         builder =>
         {
-            builder.WithOrigins("https://localhost:61961", "https://127.0.0.1:61961") 
+            builder.SetIsOriginAllowed(origin => true)
                    .AllowAnyMethod()
                    .AllowAnyHeader()
                    .AllowCredentials(); 
@@ -44,7 +44,7 @@ builder.Services.AddSwaggerGen();
 
 // Add services to the container.
 builder.Services.AddDbContext<NBAContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseInMemoryDatabase("NBADb")
             .EnableSensitiveDataLogging()
 );
 
@@ -79,7 +79,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<NBAContext>();
-        context.Database.Migrate(); // Ensure DB is created and migrated
+        context.Database.EnsureCreated(); // Ensure DB is created
         await DataSeeder.InitializeAsync(context);
     }
     catch (Exception ex)

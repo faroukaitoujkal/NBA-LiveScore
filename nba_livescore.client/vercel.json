@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://NBA_LIVESCORE_API_URL/api/$1"
+    },
+    {
+      "source": "/NBAHub(.*)",
+      "destination": "https://NBA_LIVESCORE_API_URL/NBAHub$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
