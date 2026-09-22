@@ -1,9 +1,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["NBA_LiveScore.Server.csproj", "./"]
-RUN dotnet restore "NBA_LiveScore.Server.csproj"
+COPY ["NBA_LiveScore.Server/NBA_LiveScore.Server.csproj", "NBA_LiveScore.Server/"]
+RUN dotnet restore "NBA_LiveScore.Server/NBA_LiveScore.Server.csproj"
 COPY . .
-WORKDIR "/src/"
+WORKDIR "/src/NBA_LiveScore.Server"
 RUN dotnet build "NBA_LiveScore.Server.csproj" -c Release -o /app/build
 
 FROM build AS publish
