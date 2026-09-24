@@ -1,10 +1,10 @@
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 using NBA_LiveScore.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Serilog;
 using NBA_LiveScore.Server;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure Serilog
