@@ -1,3 +1,4 @@
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 using NBA_LiveScore.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
