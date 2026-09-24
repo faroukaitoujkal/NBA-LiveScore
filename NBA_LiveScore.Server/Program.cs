@@ -21,7 +21,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll",
         builder =>
         {
-            builder.WithOrigins("https://nba-livescore.vercel.app", "http://localhost:4200", "http://localhost:61961")
+            builder.WithOrigins("https://nba-livescore.vercel.app", "https://nba-live-score.vercel.app", "http://localhost:4200", "http://localhost:61961")
                    .AllowAnyMethod()
                    .AllowAnyHeader()
                    .AllowCredentials(); 

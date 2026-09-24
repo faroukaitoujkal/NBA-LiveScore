@@ -50,7 +50,7 @@ namespace NBA_LiveScore.Server.Controllers
 
             if (fouls == null || !fouls.Any())
             {
-                return NotFound();
+                return Ok(new List<object>());
             }
 
             return Ok(fouls);
