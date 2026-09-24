@@ -53,7 +53,7 @@ if (!string.IsNullOrEmpty(envUrl))
     if (isUri && dbUri != null)
     {
         var userInfo = dbUri.UserInfo.Split(':');
-        postgresConnectionString = $"Host={dbUri.Host};Port={dbUri.Port};Database={dbUri.LocalPath.Substring(1)};Username={userInfo[0]};Password=xxxx;SSL Mode=Require;Trust Server Certificate=true;";
+        postgresConnectionString = $"Host={dbUri.Host};Port={(dbUri.Port > 0 ? dbUri.Port : 5432)};Database={dbUri.LocalPath.Substring(1)};Username={userInfo[0]};Password=xxxx;SSL Mode=Require;Trust Server Certificate=true;";
     }
     else
     {
