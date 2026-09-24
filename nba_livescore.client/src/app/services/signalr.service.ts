@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';  
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +24,7 @@ export class SignalrService {
 
   constructor() {
     this.hubConnection = new HubConnectionBuilder()
-      .withUrl('/NBAHub') 
+      .withUrl(environment.hubUrl) 
       .configureLogging(LogLevel.Information)
       .build();
   }

@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll",
         builder =>
         {
-            builder.SetIsOriginAllowed(origin => true)
+            builder.WithOrigins("https://nba-livescore.vercel.app", "http://localhost:4200", "http://localhost:61961")
                    .AllowAnyMethod()
                    .AllowAnyHeader()
                    .AllowCredentials(); 
@@ -41,12 +41,37 @@ builder.Logging.AddConsole();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache();
 
 // Add services to the container.
+var envUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+string? postgresConnectionString = null;
+
+if (!string.IsNullOrEmpty(envUrl))
+{
+    bool isUri = Uri.TryCreate(envUrl, UriKind.Absolute, out Uri? dbUri);
+    if (isUri && dbUri != null)
+    {
+        var userInfo = dbUri.UserInfo.Split(':');
+        postgresConnectionString = $"Host={dbUri.Host};Port={dbUri.Port};Database={dbUri.LocalPath.Substring(1)};Username={userInfo[0]};Password=xxxx;SSL Mode=Require;Trust Server Certificate=true;";
+    }
+    else
+    {
+        postgresConnectionString = envUrl;
+    }
+}
+
 builder.Services.AddDbContext<NBAContext>(options =>
-    options.UseInMemoryDatabase("NBADb")
-            .EnableSensitiveDataLogging()
-);
+{
+    if (!string.IsNullOrEmpty(postgresConnectionString))
+    {
+        options.UseNpgsql(postgresConnectionString);
+    }
+    else
+    {
+        options.UseInMemoryDatabase("NBADb");
+    }
+});
 
 // Register SignalR
 builder.Services.AddSignalR();

@@ -3,6 +3,8 @@ using NBA_LiveScore.Server.Models;
 using NBA_LiveScore.Server.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,17 +16,31 @@ namespace NBA_LiveScore.Server.Controllers
     public class TeamsController : ControllerBase
     {
         private readonly NBAContext _context;
+        private readonly IMemoryCache _cache;
+        private const string TeamsCacheKey = "TeamsList";
 
-        public TeamsController(NBAContext context)
+        public TeamsController(NBAContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TeamDto>>> GetTeams()
         {
-            var teams = await _context.Teams.ToListAsync();
-            return Ok(teams.Select(t => t.ToDto()));
+            if (!_cache.TryGetValue(TeamsCacheKey, out List<TeamDto> cachedTeams))
+            {
+                var teams = await _context.Teams.ToListAsync();
+                cachedTeams = teams.Select(t => t.ToDto()).ToList();
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromHours(12))
+                    .SetAbsoluteExpiration(TimeSpan.FromDays(1));
+
+                _cache.Set(TeamsCacheKey, cachedTeams, cacheEntryOptions);
+            }
+
+            return Ok(cachedTeams);
         }
 
         [HttpGet("{id}")]

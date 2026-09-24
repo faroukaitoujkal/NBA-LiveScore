@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
 import { Router, RouterOutlet } from '@angular/router';
 import { LayoutComponent } from '../layout/layout.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -17,7 +16,6 @@ export class AppComponent implements OnInit {
   title = 'NBA_LiveScore.client';
 
   constructor(
-    public authService: AuthService, 
     private router: Router,
     private translate: TranslateService,
     private themeService: ThemeService
@@ -33,10 +31,5 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.authService.currentUser.subscribe(user => {
-      if (user) {
-        this.router.navigate(['/matches_list']);
-      }
-    });
   }
 }

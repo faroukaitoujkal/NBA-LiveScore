@@ -1,4 +1,4 @@
-<div class="space-y-12 animate-fade-in py-4">
+<div class="w-full space-y-12 animate-fade-in py-4">
   
   <!-- Hero Section (Compact) -->
   <div class="relative w-full bg-brand-dark overflow-hidden rounded-xl border border-brand-border shadow-lg mb-8 py-8 md:py-12">
@@ -49,7 +49,7 @@
   </div>
 
   <!-- Live Matches Section -->
-  <section id="live-section">
+  <section id="live-section" class="w-full">
     <div class="flex items-center space-x-3 mb-6">
       <div class="flex items-center justify-center px-3 py-1 bg-brand-danger/20 border border-brand-danger/50 rounded-sm">
         <div class="w-2 h-2 bg-brand-danger rounded-full animate-pulse mr-2"></div>
@@ -152,7 +152,7 @@
 
 
   <!-- My Teams Section -->
-  <section *ngIf="favoriteTeams.length > 0" class="max-w-6xl mx-auto mt-12 animate-fade-in" style="animation-delay: 0.2s;">
+  <section *ngIf="favoriteTeams.length > 0" class="w-full max-w-6xl mx-auto mt-12 animate-fade-in" style="animation-delay: 0.2s;">
     <h2 class="font-sports text-2xl uppercase tracking-widest font-bold text-brand-text mb-6 flex items-center">
       <span class="w-2 h-8 bg-brand-accent rounded-sm mr-4"></span>
       MY TEAMS
@@ -169,13 +169,13 @@
   </section>
 
   <!-- Scheduled NBA Matches (Live API) -->
-  <section class="max-w-6xl mx-auto mt-12 animate-fade-in" style="animation-delay: 0.3s;">
+  <section class="w-full max-w-6xl mx-auto mt-12 animate-fade-in" style="animation-delay: 0.3s;">
     <h2 class="font-sports text-2xl uppercase tracking-widest font-bold text-brand-text mb-6 flex items-center">
       <span class="w-2 h-8 bg-brand-accent rounded-sm mr-4"></span>
       {{ 'HOME.UPCOMING_NBA' | translate }}
     </h2>
-    <div class="bg-brand-card rounded-xl border border-brand-border shadow-2xl overflow-hidden">
-      <table class="w-full text-left border-collapse" *ngIf="upcomingEspnMatches.length > 0">
+    <div class="w-full bg-brand-card rounded-xl border border-brand-border shadow-2xl overflow-hidden overflow-x-auto">
+      <table class="w-full text-left border-collapse min-w-[600px]" *ngIf="upcomingEspnMatches.length > 0">
         <thead class="bg-brand-dark/50 border-b border-brand-border font-sports text-sm uppercase tracking-wider text-brand-text-muted">
           <tr>
             <th class="px-6 py-4 font-bold">Date & Time</th>
@@ -223,7 +223,7 @@
   </section>
   
   <!-- Latest News / Highlights Section -->
-  <section class="mt-16 border-t border-brand-border pt-12 animate-slide-up">
+  <section class="w-full mt-16 border-t border-brand-border pt-12 animate-slide-up">
     <div class="flex justify-between items-center mb-8">
       <h2 class="font-sports text-3xl uppercase tracking-widest font-bold text-brand-text flex items-center">
         <span class="w-2 h-8 bg-brand-accent mr-4"></span>

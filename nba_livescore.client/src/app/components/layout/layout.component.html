@@ -1,4 +1,4 @@
-<div class="min-h-screen flex flex-col bg-brand-dark text-brand-text font-sans selection:bg-brand-accent selection:text-white">
+<div class="min-h-screen flex flex-col bg-brand-dark text-brand-text font-sans selection:bg-brand-accent selection:text-white w-full relative">
   
   <!-- Navbar -->
   <header class="bg-brand-dark/95 backdrop-blur-sm border-b border-brand-border sticky top-0 z-50 shadow-md">
@@ -48,26 +48,14 @@
             <option value="en" [selected]="translate.currentLang === 'en'">EN</option>
           </select>
 
-          <ng-container *ngIf="authService.currentUser | async as user">
-            <div class="flex items-center space-x-2">
-              <div class="hidden sm:flex flex-col text-right">
-                <span class="text-xs text-brand-text-muted uppercase font-bold tracking-widest">Encoder</span>
-                <span class="text-sm text-brand-text font-bold leading-none">{{ user.email }}</span>
-              </div>
-              <button (click)="logout()" class="p-2 text-brand-danger hover:text-brand-danger/80 transition-colors ml-2" [title]="'NAV.LOGOUT' | translate">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-              </button>
-            </div>
-          </ng-container>
+
         </div>
       </div>
     </div>
   </header>
 
   <!-- Main Content -->
-  <main class="flex-1 w-full max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 pb-24 md:pb-8">
+  <main class="flex-1 min-w-0 w-full max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 pb-24 md:pb-8">
     <router-outlet></router-outlet>
   </main>
 
@@ -91,36 +79,38 @@
   </nav>
 
   <!-- Footer -->
-  <footer class="bg-brand-dark border-t border-brand-border mt-auto pt-16 pb-24 md:pb-8 text-brand-text-muted hidden md:block">
+  <footer class="bg-brand-dark border-t border-brand-border mt-auto pt-12 pb-24 md:pb-8 text-brand-text-muted">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10 text-center md:text-left">
         
-        <div class="col-span-1">
-          <div class="flex items-center space-x-3 mb-6">
+        <div class="col-span-1 flex flex-col items-center md:items-start">
+          <div class="flex items-center space-x-3 mb-4">
             <img src="https://cdn.nba.com/logos/leagues/logo-nba.svg" alt="NBA Logo" class="h-8 w-auto object-contain opacity-80 dark:invert-0 invert">
             <span class="font-sports text-xl font-black text-brand-text tracking-tighter uppercase">
               <span class="text-brand-accent">LIVE</span>SCORE
             </span>
           </div>
-          <p class="text-sm font-medium mb-6">
+          <p class="text-sm font-medium mb-6 max-w-xs">
             {{ 'LAYOUT.FOOTER_DESC' | translate }}
           </p>
         </div>
 
-        <div>
+        <div class="flex flex-col items-center md:items-start">
            <h4 class="font-sports text-lg uppercase tracking-widest font-bold text-brand-text mb-6 flex items-center">
-             <span class="w-1.5 h-6 bg-brand-accent mr-3"></span> {{ 'LAYOUT.LEGAL' | translate }}
+             <span class="hidden md:block w-1.5 h-6 bg-brand-accent mr-3"></span> 
+             <span>{{ 'LAYOUT.LEGAL' | translate }}</span>
           </h4>
-          <ul class="space-y-4 text-sm">
+          <ul class="space-y-3 text-sm">
             <li><a routerLink="/legal/mentions" class="hover:text-brand-accent transition-colors hover:underline">{{ 'LAYOUT.LEGAL_MENTIONS' | translate }}</a></li>
             <li><a routerLink="/legal/privacy" class="hover:text-brand-accent transition-colors hover:underline">{{ 'LAYOUT.PRIVACY' | translate }}</a></li>
             <li><a routerLink="/legal/terms" class="hover:text-brand-accent transition-colors hover:underline">{{ 'LAYOUT.TERMS' | translate }}</a></li>
           </ul>
         </div>
 
-        <div>
+        <div class="flex flex-col items-center md:items-start">
            <h4 class="font-sports text-lg uppercase tracking-widest font-bold text-brand-text mb-6 flex items-center">
-             <span class="w-1.5 h-6 bg-brand-accent mr-3"></span> {{ 'LAYOUT.FOLLOW_US' | translate }}
+             <span class="hidden md:block w-1.5 h-6 bg-brand-accent mr-3"></span> 
+             <span>{{ 'LAYOUT.FOLLOW_US' | translate }}</span>
           </h4>
           <div class="flex space-x-4">
              <a href="https://x.com/NBA" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded bg-brand-card flex items-center justify-center hover:bg-brand-accent hover:text-white transition-all text-brand-text border border-brand-border">
@@ -133,9 +123,9 @@
         </div>
       </div>
       
-      <div class="border-t border-brand-border pt-8 flex flex-col md:flex-row justify-between items-center text-xs">
+      <div class="border-t border-brand-border pt-6 flex flex-col md:flex-row justify-between items-center text-xs space-y-4 md:space-y-0">
         <p>&copy; 2026 NBA LiveScore. {{ 'LAYOUT.COPYRIGHT' | translate }}</p>
-        <div class="mt-4 md:mt-0 flex space-x-6 font-sports uppercase tracking-wider font-bold">
+        <div class="flex space-x-6 font-sports uppercase tracking-wider font-bold">
            <a routerLink="/legal/privacy" class="hover:text-brand-text transition-colors">{{ 'LAYOUT.PRIVACY' | translate }}</a>
            <a routerLink="/legal/terms" class="hover:text-brand-text transition-colors">{{ 'LAYOUT.TERMS' | translate }}</a>
         </div>
