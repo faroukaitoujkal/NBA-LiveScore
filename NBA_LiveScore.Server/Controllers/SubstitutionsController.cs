@@ -43,6 +43,18 @@ namespace NBA_LiveScore.Server.Controllers
             return substitution;
         }
 
+        [HttpGet("match/{matchId}")]
+        public async Task<ActionResult<IEnumerable<Substitution>>> GetSubstitutionsByMatch(int matchId)
+        {
+            var substitutions = await _context.Substitutions
+                .Where(s => s.MatchId == matchId)
+                .Include(s => s.PlayerIn)
+                .Include(s => s.PlayerOut)
+                .ToListAsync();
+
+            return Ok(substitutions);
+        }
+
         [HttpPost]
         public async Task<ActionResult<Substitution>> PostSubstitution(Substitution substitution)
         {

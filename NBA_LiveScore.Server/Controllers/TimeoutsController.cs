@@ -44,7 +44,7 @@ namespace NBA_LiveScore.Server.Controllers
             var timeouts = await _context.Timeouts.Where(t => t.MatchId == matchId).ToListAsync();
             if (timeouts == null || !timeouts.Any())
             {
-                return NotFound("No timeouts found for this match.");
+                return Ok(new List<TimeoutMatch>());
             }
             return timeouts;
         }
