@@ -30,7 +30,7 @@ namespace NBA_LiveScore.Server.Controllers
         {
             if (!_cache.TryGetValue(TeamsCacheKey, out List<TeamDto> cachedTeams))
             {
-                var teams = await _context.Teams.ToListAsync();
+                var teams = await _context.Teams.AsNoTracking().ToListAsync();
                 cachedTeams = teams.Select(t => t.ToDto()).ToList();
 
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -46,7 +46,7 @@ namespace NBA_LiveScore.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TeamDetailDto>> GetTeam(int id)
         {
-            var team = await _context.Teams
+            var team = await _context.Teams.AsNoTracking()
                 .Include(t => t.Players)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
@@ -61,7 +61,7 @@ namespace NBA_LiveScore.Server.Controllers
         [HttpGet("{teamId}/name")]
         public async Task<IActionResult> GetTeamName(int teamId)
         {
-            var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamId);
+            var team = await _context.Teams.AsNoTracking().FirstOrDefaultAsync(t => t.Id == teamId);
             if (team == null)
             {
                 return NotFound();

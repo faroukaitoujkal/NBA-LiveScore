@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.AspNetCore.SignalR;
+using System.Net.Http;
+using Microsoft.Extensions.Caching.Memory;
+using System;
 
 namespace NBA_LiveScore.Server.Controllers
 {
@@ -18,18 +21,24 @@ namespace NBA_LiveScore.Server.Controllers
         private readonly NBAContext _context;
         private readonly IHubContext<NBAHub> _hubContext;
         private readonly ILogger<MatchesController> _logger;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IMemoryCache _cache;
+        private const string UpcomingMatchesCacheKey = "UpcomingMatchesList";
 
-        public MatchesController(NBAContext context, IHubContext<NBAHub> hubContext, ILogger<MatchesController> logger)
+        public MatchesController(NBAContext context, IHubContext<NBAHub> hubContext, ILogger<MatchesController> logger, IHttpClientFactory httpClientFactory, IMemoryCache cache)
         {
             _context = context;
             _hubContext = hubContext;
             _logger = logger;
+            _httpClientFactory = httpClientFactory;
+            _cache = cache;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MatchDto>>> GetMatches()
         {
             var matches = await _context.Matches
+                .AsNoTracking()
                 .Include(m => m.HomeTeam)
                 .Include(m => m.AwayTeam)
                 .ToListAsync();
@@ -41,6 +50,7 @@ namespace NBA_LiveScore.Server.Controllers
         public async Task<ActionResult<IEnumerable<MatchDto>>> GetLiveMatches()
         {
             var matches = await _context.Matches
+                .AsNoTracking()
                 .Include(m => m.HomeTeam)
                 .Include(m => m.AwayTeam)
                 .Where(m => m.Status == MatchStatus.InProgress)
@@ -53,6 +63,7 @@ namespace NBA_LiveScore.Server.Controllers
         public async Task<ActionResult<MatchDto>> GetMatch(int id)
         {
             var match = await _context.Matches
+                .AsNoTracking()
                 .Include(m => m.HomeTeam)
                     .ThenInclude(t => t.Players)
                 .Include(m => m.AwayTeam)
@@ -193,7 +204,12 @@ namespace NBA_LiveScore.Server.Controllers
         {
             try
             {
-                using var httpClient = new System.Net.Http.HttpClient();
+                if (_cache.TryGetValue(UpcomingMatchesCacheKey, out string cachedMatches))
+                {
+                    return Content(cachedMatches, "application/json");
+                }
+
+                var httpClient = _httpClientFactory.CreateClient();
                 httpClient.DefaultRequestHeaders.Add("User-Agent", "curl/7.68.0");
                 httpClient.DefaultRequestHeaders.Add("Accept", "*/*");
                 
@@ -246,7 +262,10 @@ namespace NBA_LiveScore.Server.Controllers
                 // Replace the events array in the base response with our merged array
                 rootNode["events"] = allEvents;
 
-                return Content(rootNode.ToJsonString(), "application/json");
+                var resultJson = rootNode.ToJsonString();
+                _cache.Set(UpcomingMatchesCacheKey, resultJson, TimeSpan.FromHours(1));
+
+                return Content(resultJson, "application/json");
             }
             catch (System.Exception ex)
             {

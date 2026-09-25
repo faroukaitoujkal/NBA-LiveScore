@@ -23,14 +23,14 @@ namespace NBA_LiveScore.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PlayerDto>>> GetPlayers()
         {
-            var players = await _context.Players.Include(p => p.Team).ToListAsync();
+            var players = await _context.Players.AsNoTracking().Include(p => p.Team).ToListAsync();
             return Ok(players.Select(p => p.ToDto()));
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<PlayerDto>> GetPlayer(int id)
         {
-            var player = await _context.Players.Include(p => p.Team).FirstOrDefaultAsync(p => p.Id == id);
+            var player = await _context.Players.AsNoTracking().Include(p => p.Team).FirstOrDefaultAsync(p => p.Id == id);
 
             if (player == null)
             {
@@ -43,7 +43,7 @@ namespace NBA_LiveScore.Server.Controllers
         [HttpGet("team/{teamId}")]
         public async Task<ActionResult<IEnumerable<PlayerDto>>> GetPlayersByTeam(int teamId)
         {
-            var players = await _context.Players
+            var players = await _context.Players.AsNoTracking()
                 .Where(p => p.TeamId == teamId)
                 .ToListAsync();
 

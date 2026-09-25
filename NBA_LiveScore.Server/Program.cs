@@ -43,6 +43,7 @@ builder.Logging.AddConsole();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient();
 
 // Add services to the container.
 var envUrl = Environment.GetEnvironmentVariable("DATABASE_URL");

@@ -9,10 +9,10 @@ namespace NBA_LiveScore.Server.Data
     {
         public static async Task InitializeAsync(NBAContext context)
         {
-            // if (context.Teams.Count() >= 30)
-            // {
-            //     return; // DB has been seeded with NBA data
-            // }
+            if (await context.Teams.AnyAsync())
+            {
+                return; // DB has been seeded with NBA data
+            }
 
             // Clear old data
             context.Matches.RemoveRange(context.Matches);

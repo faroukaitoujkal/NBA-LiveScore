@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net.Http;
+using Microsoft.Extensions.Caching.Memory;
+using System;
 
 namespace NBA_LiveScore.Server.Controllers
 {
@@ -14,10 +17,15 @@ namespace NBA_LiveScore.Server.Controllers
     public class StandingsController : ControllerBase
     {
         private readonly NBAContext _context;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IMemoryCache _cache;
+        private const string StandingsCacheKey = "StandingsList";
 
-        public StandingsController(NBAContext context)
+        public StandingsController(NBAContext context, IHttpClientFactory httpClientFactory, IMemoryCache cache)
         {
             _context = context;
+            _httpClientFactory = httpClientFactory;
+            _cache = cache;
         }
 
         [HttpGet]
@@ -25,7 +33,12 @@ namespace NBA_LiveScore.Server.Controllers
         {
             try
             {
-                using var httpClient = new System.Net.Http.HttpClient();
+                if (_cache.TryGetValue(StandingsCacheKey, out List<StandingDto> cachedStandings))
+                {
+                    return Ok(cachedStandings);
+                }
+
+                var httpClient = _httpClientFactory.CreateClient();
                 httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
                 var response = await httpClient.GetStringAsync("https://site.api.espn.com/apis/v2/sports/basketball/nba/standings");
                 var doc = System.Text.Json.JsonDocument.Parse(response);
@@ -81,13 +94,15 @@ namespace NBA_LiveScore.Server.Controllers
                     .ThenByDescending(s => s.PointDifferential)
                     .ToList();
 
+                _cache.Set(StandingsCacheKey, sortedStandings, TimeSpan.FromMinutes(15));
+
                 return Ok(sortedStandings);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Fallback to local DB calculation if ESPN API fails
-                var teams = await _context.Teams.ToListAsync();
-                var matches = await _context.Matches.Where(m => m.Status == MatchStatus.Finished).ToListAsync();
+                var teams = await _context.Teams.AsNoTracking().ToListAsync();
+                var matches = await _context.Matches.AsNoTracking().Where(m => m.Status == MatchStatus.Finished).ToListAsync();
 
                 var standings = new List<StandingDto>();
 
