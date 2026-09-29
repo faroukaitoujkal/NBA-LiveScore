@@ -62,8 +62,7 @@ if (!string.IsNullOrEmpty(envUrl))
             Database = dbUri.LocalPath.Substring(1),
             Username = userInfo[0],
             Password = userInfo.Length > 1 ? userInfo[1] : "",
-            SslMode = Npgsql.SslMode.Require,
-            TrustServerCertificate = true
+            SslMode = Npgsql.SslMode.Require
         };
         postgresConnectionString = connStrBuilder.ToString();
     }
@@ -103,6 +102,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
+
+app.UseMiddleware<ApiKeyAuthMiddleware>();
 
 app.UseAuthorization();
 

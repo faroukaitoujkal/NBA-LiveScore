@@ -28,10 +28,10 @@ namespace NBA_LiveScore.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TeamDto>>> GetTeams()
         {
-            if (!_cache.TryGetValue(TeamsCacheKey, out List<TeamDto> cachedTeams))
+            if (!_cache.TryGetValue(TeamsCacheKey, out List<TeamDto>? cachedTeams))
             {
                 var teams = await _context.Teams.AsNoTracking().ToListAsync();
-                cachedTeams = teams.Select(t => t.ToDto()).ToList();
+                cachedTeams = teams.Select(t => t.ToDto()).OfType<TeamDto>().ToList();
 
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                     .SetSlidingExpiration(TimeSpan.FromHours(12))

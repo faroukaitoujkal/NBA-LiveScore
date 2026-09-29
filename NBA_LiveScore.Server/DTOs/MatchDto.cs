@@ -6,7 +6,7 @@ namespace NBA_LiveScore.Server.DTOs
     {
         public int Id { get; set; }
         public DateTime MatchDate { get; set; }
-        public string Location { get; set; }
+        public string Location { get; set; } = string.Empty;
         
         public int HomeTeamId { get; set; }
         public TeamDetailDto? HomeTeam { get; set; }

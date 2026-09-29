@@ -25,7 +25,7 @@ export class SignalrService {
   constructor() {
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(environment.hubUrl) 
-      .configureLogging(LogLevel.Information)
+      .configureLogging(LogLevel.Error)
       .build();
   }
 
@@ -75,20 +75,7 @@ export class SignalrService {
     });
   }
 
-  updateCurrentQuarter(matchId: number, currentQuarter: number): void {
-    this.hubConnection
-      .invoke('UpdateQuarter', matchId, currentQuarter)
-      .catch((err: any) => console.error('Error sending quarter update:', err));
-  }
 
-  public sendMessage(message: string): void {
-    this.hubConnection.invoke('SendMessage', message)
-      .then(() => {
-      })
-      .catch((err: any) => {
-        console.error('Erreur d\'envoi du message :', err);
-      });
-  }
 
   public getConnectionId(): void {
     this.hubConnection.invoke('GetConnectionId')

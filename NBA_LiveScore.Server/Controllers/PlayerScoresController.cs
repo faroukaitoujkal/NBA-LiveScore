@@ -1,4 +1,4 @@
-using NBA_LiveScore.Server.Data;
+ï»¿using NBA_LiveScore.Server.Data;
 using NBA_LiveScore.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -48,7 +48,7 @@ namespace NBA_LiveScore.Server.Controllers
 
             if (scores == null || scores.Count == 0)
             {
-                return NotFound($"Aucun score trouvé pour le match avec l'ID {matchId}.");
+                return Ok(new List<PlayerScore>());
             }
 
             return Ok(scores);
@@ -57,27 +57,27 @@ namespace NBA_LiveScore.Server.Controllers
         [HttpPost("add-score")]
         public async Task<ActionResult<PlayerScore>> AddScore([FromBody] PlayerScore playerScore)
         {
-            // Vérifier si le joueur existe
+            // VÃ©rifier si le joueur existe
             var player = await _context.Players.FindAsync(playerScore.PlayerId);
             if (player == null)
             {
                 return NotFound($"Joueur avec ID {playerScore.PlayerId} introuvable.");
             }
 
-            // Vérifier si le match existe
+            // VÃ©rifier si le match existe
             var match = await _context.Matches.FindAsync(playerScore.MatchId);
             if (match == null)
             {
                 return NotFound($"Match avec ID {playerScore.MatchId} introuvable.");
             }
 
-            // Définir le scoreTime pour le moment actuel
+            // DÃ©finir le scoreTime pour le moment actuel
             playerScore.ScoreTime = DateTime.UtcNow;
 
             // Ajouter le score du joueur
             _context.PlayerScores.Add(playerScore);
 
-            // Incrémenter le score de l'équipe correspondante
+            // IncrÃ©menter le score de l'Ã©quipe correspondante
             if (player.TeamId == match.HomeTeamId)
             {
                 match.HomeTeamScore += playerScore.Points;
@@ -90,7 +90,7 @@ namespace NBA_LiveScore.Server.Controllers
             // Sauvegarder les changements
             await _context.SaveChangesAsync();
 
-            // Diffuser les informations de mise à jour via SignalR
+            // Diffuser les informations de mise Ã  jour via SignalR
             var updatedData = new
             {
                 matchId = playerScore.MatchId,
@@ -101,7 +101,7 @@ namespace NBA_LiveScore.Server.Controllers
 
             await _hubContext.Clients.All.SendAsync("ScoreUpdated", updatedData);
 
-            // Retourner le résultat
+            // Retourner le rÃ©sultat
             return CreatedAtAction(nameof(GetPlayerScore), new { id = playerScore.Id }, playerScore);
         }
 
@@ -155,3 +155,4 @@ namespace NBA_LiveScore.Server.Controllers
         }
     }
 }
+

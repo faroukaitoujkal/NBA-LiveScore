@@ -65,9 +65,9 @@ namespace NBA_LiveScore.Server.Controllers
             var match = await _context.Matches
                 .AsNoTracking()
                 .Include(m => m.HomeTeam)
-                    .ThenInclude(t => t.Players)
+                    .ThenInclude(t => t!.Players)
                 .Include(m => m.AwayTeam)
-                    .ThenInclude(t => t.Players)
+                    .ThenInclude(t => t!.Players)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (match == null)
@@ -204,9 +204,9 @@ namespace NBA_LiveScore.Server.Controllers
         {
             try
             {
-                if (_cache.TryGetValue(UpcomingMatchesCacheKey, out string cachedMatches))
+                if (_cache.TryGetValue(UpcomingMatchesCacheKey, out string? cachedMatches))
                 {
-                    return Content(cachedMatches, "application/json");
+                    return Content(cachedMatches ?? string.Empty, "application/json");
                 }
 
                 var httpClient = _httpClientFactory.CreateClient();
@@ -217,7 +217,7 @@ namespace NBA_LiveScore.Server.Controllers
                 var baseResponse = await httpClient.GetStringAsync("https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard");
                 var rootNode = System.Text.Json.Nodes.JsonNode.Parse(baseResponse);
                 
-                var calendarArray = rootNode["leagues"]?[0]?["calendar"]?.AsArray();
+                var calendarArray = rootNode?["leagues"]?[0]?["calendar"]?.AsArray();
                 if (calendarArray == null) return Content(baseResponse, "application/json");
 
                 var todayStr = System.DateTime.UtcNow.ToString("yyyy-MM-dd");
@@ -225,8 +225,8 @@ namespace NBA_LiveScore.Server.Controllers
 
                 foreach (var dateNode in calendarArray)
                 {
-                    var dateStr = dateNode.ToString();
-                    if (string.Compare(dateStr, todayStr) >= 0)
+                    var dateStr = dateNode?.ToString();
+                    if (dateStr != null && string.Compare(dateStr, todayStr) >= 0)
                     {
                         // ESPN dates look like "2026-10-03T07:00Z". Convert to "20261003"
                         var yyyyMMdd = dateStr.Substring(0, 10).Replace("-", "");
@@ -253,16 +253,18 @@ namespace NBA_LiveScore.Server.Controllers
                         foreach (var ev in dayEvents)
                         {
                             // Clone node by parsing its string representation to add to a new array
-                            var evClone = System.Text.Json.Nodes.JsonNode.Parse(ev.ToJsonString());
+                            var evClone = System.Text.Json.Nodes.JsonNode.Parse(ev?.ToJsonString() ?? "{}");
                             allEvents.Add(evClone);
                         }
                     }
                 }
 
-                // Replace the events array in the base response with our merged array
-                rootNode["events"] = allEvents;
+                if (rootNode != null)
+                {
+                    rootNode["events"] = allEvents;
+                }
 
-                var resultJson = rootNode.ToJsonString();
+                var resultJson = rootNode?.ToJsonString() ?? "{}";
                 _cache.Set(UpcomingMatchesCacheKey, resultJson, TimeSpan.FromHours(1));
 
                 return Content(resultJson, "application/json");

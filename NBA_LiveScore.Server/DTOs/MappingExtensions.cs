@@ -5,7 +5,7 @@ namespace NBA_LiveScore.Server.DTOs
 {
     public static class MappingExtensions
     {
-        public static TeamDto ToDto(this Team team)
+        public static TeamDto? ToDto(this Team? team)
         {
             if (team == null) return null;
             return new TeamDto
@@ -19,7 +19,7 @@ namespace NBA_LiveScore.Server.DTOs
             };
         }
 
-        public static TeamDetailDto ToDetailDto(this Team team)
+        public static TeamDetailDto? ToDetailDto(this Team? team)
         {
             if (team == null) return null;
             return new TeamDetailDto
@@ -30,11 +30,11 @@ namespace NBA_LiveScore.Server.DTOs
                 CoachName = team.CoachName,
                 LogoUrl = team.LogoUrl,
                 PrimaryColor = team.PrimaryColor,
-                Players = team.Players?.Select(p => p.ToDto()).ToList() ?? new List<PlayerDto>()
+                Players = team.Players?.Select(p => p.ToDto()).OfType<PlayerDto>().ToList() ?? new List<PlayerDto>()
             };
         }
 
-        public static PlayerDto ToDto(this Player player)
+        public static PlayerDto? ToDto(this Player? player)
         {
             if (player == null) return null;
             return new PlayerDto
@@ -51,14 +51,14 @@ namespace NBA_LiveScore.Server.DTOs
             };
         }
 
-        public static MatchDto ToDto(this Match match)
+        public static MatchDto? ToDto(this Match? match)
         {
             if (match == null) return null;
             return new MatchDto
             {
                 Id = match.Id,
                 MatchDate = match.MatchDate,
-                Location = match.Location,
+                Location = match.Location ?? string.Empty,
                 HomeTeamId = match.HomeTeamId,
                 HomeTeam = match.HomeTeam?.ToDetailDto(),
                 AwayTeamId = match.AwayTeamId,

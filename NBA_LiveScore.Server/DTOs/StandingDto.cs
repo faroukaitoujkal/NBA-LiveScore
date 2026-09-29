@@ -3,7 +3,7 @@ namespace NBA_LiveScore.Server.DTOs
     public class StandingDto
     {
         public int TeamId { get; set; }
-        public string TeamName { get; set; }
+        public string TeamName { get; set; } = string.Empty;
         public string? TeamLogoUrl { get; set; }
         public int GamesPlayed { get; set; }
         public int Wins { get; set; }

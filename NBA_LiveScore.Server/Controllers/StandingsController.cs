@@ -33,7 +33,7 @@ namespace NBA_LiveScore.Server.Controllers
         {
             try
             {
-                if (_cache.TryGetValue(StandingsCacheKey, out List<StandingDto> cachedStandings))
+                if (_cache.TryGetValue(StandingsCacheKey, out List<StandingDto>? cachedStandings))
                 {
                     return Ok(cachedStandings);
                 }
@@ -78,7 +78,7 @@ namespace NBA_LiveScore.Server.Controllers
                         standingsList.Add(new StandingDto
                         {
                             TeamId = teamId,
-                            TeamName = name,
+                            TeamName = name ?? "Unknown",
                             TeamLogoUrl = logo,
                             GamesPlayed = gamesPlayed,
                             Wins = wins,

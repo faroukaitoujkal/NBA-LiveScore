@@ -16,16 +16,5 @@ namespace NBA_LiveScore.Server
             Log.Information("Client connected with ConnectionId: {ConnectionId}", Context.ConnectionId);
             await base.OnConnectedAsync();
         }
-
-        public async Task UpdateQuarter(int matchId, int currentQuarter)
-        {
-            await Clients.All.SendAsync("QuarterUpdated", currentQuarter);
-        }
-
-        public async Task SendMessage(string message)
-        {
-            Log.Information("SendMessage called with message: {Message}", message);
-            await Clients.All.SendAsync("ReceiveMessage", message);
-        }
     }
 }

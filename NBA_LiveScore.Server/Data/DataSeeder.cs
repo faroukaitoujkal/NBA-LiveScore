@@ -130,7 +130,7 @@ namespace NBA_LiveScore.Server.Data
                         var statusStr = comps.GetProperty("status").GetProperty("type").GetProperty("name").GetString();
                         var competitors = comps.GetProperty("competitors");
                         
-                        string homeId = null, awayId = null;
+                        string? homeId = null, awayId = null;
                         int homeScore = 0, awayScore = 0;
                         
                         foreach (var comp in competitors.EnumerateArray())
