@@ -117,7 +117,16 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<NBAContext>();
-        context.Database.EnsureCreated(); // Ensure DB is created
+        
+        if (context.Database.IsRelational())
+        {
+            await context.Database.MigrateAsync(); // Apply EF Core migrations for PostgreSQL
+        }
+        else
+        {
+            context.Database.EnsureCreated(); // Ensure DB is created for InMemory
+        }
+        
         await DataSeeder.InitializeAsync(context);
     }
     catch (Exception ex)

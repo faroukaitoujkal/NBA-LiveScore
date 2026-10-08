@@ -9,10 +9,16 @@ export const apiKeyInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  const clonedRequest = req.clone({
-    setHeaders: {
-      'X-API-Key': environment.adminApiKey
-    }
-  });
-  return next(clonedRequest);
+  const adminKey = localStorage.getItem('adminApiKey');
+  
+  if (adminKey) {
+    const clonedRequest = req.clone({
+      setHeaders: {
+        'X-API-Key': adminKey
+      }
+    });
+    return next(clonedRequest);
+  }
+
+  return next(req);
 };
