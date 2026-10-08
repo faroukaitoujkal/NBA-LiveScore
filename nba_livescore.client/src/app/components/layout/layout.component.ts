@@ -20,6 +20,7 @@ export class LayoutComponent implements OnInit {
   showAdminLogoutModal = false;
   adminKeyInput = '';
   isLoggingIn = false;
+  authError = false;
 
   constructor(
     public translate: TranslateService,
@@ -52,6 +53,7 @@ export class LayoutComponent implements OnInit {
 
     this.showAdminModal = true;
     this.adminKeyInput = '';
+    this.authError = false;
   }
 
   closeAdminLogoutModal() {
@@ -68,12 +70,14 @@ export class LayoutComponent implements OnInit {
   closeAdminModal() {
     this.showAdminModal = false;
     this.adminKeyInput = '';
+    this.authError = false;
   }
 
   submitAdminKey() {
     if (!this.adminKeyInput.trim()) return;
     
     this.isLoggingIn = true;
+    this.authError = false;
     this.http.post(`${environment.apiUrl}/auth/verify`, {}, { headers: { 'X-API-Key': this.adminKeyInput } }).subscribe({
       next: () => {
         localStorage.setItem('adminApiKey', this.adminKeyInput);
@@ -83,7 +87,8 @@ export class LayoutComponent implements OnInit {
         window.location.reload();
       },
       error: () => {
-        alert(this.translate.instant('ADMIN.LOGIN_ERROR'));
+        this.authError = true;
+        this.adminKeyInput = '';
         this.isLoggingIn = false;
       }
     });

@@ -144,7 +144,16 @@
       
       <div class="space-y-4">
         <div>
-          <input type="password" [(ngModel)]="adminKeyInput" (keyup.enter)="submitAdminKey()" [placeholder]="'ADMIN.SECRET_KEY_PLACEHOLDER' | translate" class="w-full bg-brand-dark text-brand-text border border-brand-border rounded-lg px-4 py-3 focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors font-mono">
+          <input type="password" [(ngModel)]="adminKeyInput" (keyup.enter)="submitAdminKey()" [placeholder]="'ADMIN.SECRET_KEY_PLACEHOLDER' | translate" 
+                 class="w-full bg-brand-dark text-brand-text rounded-lg px-4 py-3 focus:outline-none focus:ring-1 transition-colors font-mono"
+                 [ngClass]="{'border-2 border-red-500 focus:border-red-500 focus:ring-red-500': authError, 'border border-brand-border focus:border-brand-accent focus:ring-brand-accent': !authError}"
+                 (input)="authError = false">
+          <div *ngIf="authError" class="text-red-500 text-sm mt-2.5 flex items-center animate-fade-in font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            {{ 'ADMIN.LOGIN_ERROR' | translate }}
+          </div>
         </div>
         <button (click)="submitAdminKey()" class="w-full bg-brand-accent hover:bg-brand-danger text-white font-sports uppercase tracking-widest font-bold py-3 rounded-lg transition-colors flex justify-center items-center" [disabled]="isLoggingIn">
           <span *ngIf="isLoggingIn" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
