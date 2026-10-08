@@ -35,6 +35,10 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
   loading = true;
   MatchStatus = MatchStatus;
 
+  get isAdmin(): boolean {
+    return !!localStorage.getItem('adminApiKey');
+  }
+
   recentEvents: PlayEvent[] = [];
   selectedHomePlayerId: number | null = null;
   selectedAwayPlayerId: number | null = null;

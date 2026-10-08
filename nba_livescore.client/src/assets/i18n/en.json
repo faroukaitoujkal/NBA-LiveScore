@@ -1,4 +1,14 @@
 {
+  "ADMIN": {
+    "LOGOUT_TOOLTIP": "Logout Admin",
+    "LOGIN_TOOLTIP": "Admin Login",
+    "MODAL_TITLE": "Admin Login",
+    "MODAL_DESC": "Enter your secret API key to access the encoder command center.",
+    "SECRET_KEY_PLACEHOLDER": "Secret Key...",
+    "UNLOCK_BUTTON": "Unlock System",
+    "LOGOUT_CONFIRM": "Do you want to log out from admin mode?",
+    "LOGIN_ERROR": "Incorrect key. Access denied."
+  },
   "NAV": {
     "HOME": "Home",
     "MATCHES": "Matches",

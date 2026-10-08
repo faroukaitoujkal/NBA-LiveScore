@@ -1,4 +1,14 @@
 {
+  "ADMIN": {
+    "LOGOUT_TOOLTIP": "Déconnexion Admin",
+    "LOGIN_TOOLTIP": "Connexion Admin",
+    "MODAL_TITLE": "Accès Administrateur",
+    "MODAL_DESC": "Saisissez votre clé API secrète pour accéder au centre de commandes.",
+    "SECRET_KEY_PLACEHOLDER": "Clé Secrète...",
+    "UNLOCK_BUTTON": "Déverrouiller le système",
+    "LOGOUT_CONFIRM": "Voulez-vous vous déconnecter du mode administrateur ?",
+    "LOGIN_ERROR": "Clé incorrecte. Accès refusé."
+  },
   "NAV": {
     "HOME": "Accueil",
     "MATCHES": "Matchs",

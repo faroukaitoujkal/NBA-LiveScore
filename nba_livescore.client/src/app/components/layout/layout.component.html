@@ -48,7 +48,15 @@
             <option value="en" [selected]="translate.currentLang === 'en'">EN</option>
           </select>
 
-
+          <!-- Admin Toggle -->
+          <button (click)="promptAdminKey()" class="p-2 rounded-sm bg-brand-card hover:bg-brand-card-hover border border-brand-border text-brand-text transition-colors" [title]="isAdmin ? ('ADMIN.LOGOUT_TOOLTIP' | translate) : ('ADMIN.LOGIN_TOOLTIP' | translate)" [ngClass]="{'text-brand-accent border-brand-accent': isAdmin}">
+            <svg *ngIf="!isAdmin" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <svg *ngIf="isAdmin" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -119,4 +127,30 @@
       </div>
     </div>
   </footer>
+
+  <!-- Admin Login Modal -->
+  <div *ngIf="showAdminModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in">
+    <div class="bg-brand-card border-2 border-brand-accent rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 relative transform transition-all">
+      <button (click)="closeAdminModal()" class="absolute top-4 right-4 text-brand-text-muted hover:text-brand-text transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+      
+      <div class="flex items-center mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-brand-accent mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+        <h3 class="font-sports text-2xl uppercase tracking-widest font-bold text-brand-text">{{ 'ADMIN.MODAL_TITLE' | translate }}</h3>
+      </div>
+      
+      <p class="text-brand-text-muted text-sm mb-6">{{ 'ADMIN.MODAL_DESC' | translate }}</p>
+      
+      <div class="space-y-4">
+        <div>
+          <input type="password" [(ngModel)]="adminKeyInput" (keyup.enter)="submitAdminKey()" [placeholder]="'ADMIN.SECRET_KEY_PLACEHOLDER' | translate" class="w-full bg-brand-dark text-brand-text border border-brand-border rounded-lg px-4 py-3 focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors font-mono">
+        </div>
+        <button (click)="submitAdminKey()" class="w-full bg-brand-accent hover:bg-brand-danger text-white font-sports uppercase tracking-widest font-bold py-3 rounded-lg transition-colors flex justify-center items-center" [disabled]="isLoggingIn">
+          <span *ngIf="isLoggingIn" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          <span *ngIf="!isLoggingIn">{{ 'ADMIN.UNLOCK_BUTTON' | translate }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
