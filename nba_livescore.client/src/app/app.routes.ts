@@ -1,21 +1,13 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { StandingsComponent } from './pages/standings/standings.component';
-import { TeamListComponent } from './pages/team-list/team-list.component';
-import { TeamDetailComponent } from './pages/team-detail/team-detail.component';
-import { LiveMatchTrackerComponent } from './components/live-match-tracker/live-match-tracker.component';
-import { LegalMentionsComponent } from './pages/legal/legal-mentions/legal-mentions.component';
-import { PrivacyPolicyComponent } from './pages/legal/privacy-policy/privacy-policy.component';
-import { TermsOfServiceComponent } from './pages/legal/terms-of-service/terms-of-service.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'standings', component: StandingsComponent },
-  { path: 'teams', component: TeamListComponent },
-  { path: 'teams/:id', component: TeamDetailComponent },
-  { path: 'matches/:id', component: LiveMatchTrackerComponent },
-  { path: 'legal/mentions', component: LegalMentionsComponent },
-  { path: 'legal/privacy', component: PrivacyPolicyComponent },
-  { path: 'legal/terms', component: TermsOfServiceComponent },
+  { path: '', loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent) },
+  { path: 'standings', loadComponent: () => import('./pages/standings/standings.component').then(m => m.StandingsComponent) },
+  { path: 'teams', loadComponent: () => import('./pages/team-list/team-list.component').then(m => m.TeamListComponent) },
+  { path: 'teams/:id', loadComponent: () => import('./pages/team-detail/team-detail.component').then(m => m.TeamDetailComponent) },
+  { path: 'matches/:id', loadComponent: () => import('./components/live-match-tracker/live-match-tracker.component').then(m => m.LiveMatchTrackerComponent) },
+  { path: 'legal/mentions', loadComponent: () => import('./pages/legal/legal-mentions/legal-mentions.component').then(m => m.LegalMentionsComponent) },
+  { path: 'legal/privacy', loadComponent: () => import('./pages/legal/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent) },
+  { path: 'legal/terms', loadComponent: () => import('./pages/legal/terms-of-service/terms-of-service.component').then(m => m.TermsOfServiceComponent) },
   { path: '**', redirectTo: '' }
 ];

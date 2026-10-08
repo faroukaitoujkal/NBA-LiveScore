@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as signalR from '@microsoft/signalr';  
+import * as signalR from '@microsoft/signalr';
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -16,15 +16,17 @@ export class SignalrService {
   private timeoutCreatedSource = new BehaviorSubject<any>(null);
   private timerUpdatedSource = new BehaviorSubject<any>(null);
   private _currentQuarterUpdated = new Subject<number>();
+  private matchEventsUpdatedSource = new Subject<number>();
 
   scoreUpdated$ = this.scoreUpdatedSource.asObservable();
   timeoutCreated$ = this.timeoutCreatedSource.asObservable();
   timerUpdated$ = this.timerUpdatedSource.asObservable();
   currentQuarterUpdated$ = this._currentQuarterUpdated.asObservable();
+  matchEventsUpdated$ = this.matchEventsUpdatedSource.asObservable();
 
   constructor() {
     this.hubConnection = new HubConnectionBuilder()
-      .withUrl(environment.hubUrl) 
+      .withUrl(environment.hubUrl)
       .configureLogging(LogLevel.Error)
       .build();
   }
@@ -46,6 +48,7 @@ export class SignalrService {
     this.listenToScoreUpdates();
     this.listenToTimeoutCreated();
     this.listenForQuarterUpdates();
+    this.listenToMatchEventsUpdates();
   }
 
   public listenForMessages(): void {
@@ -71,7 +74,14 @@ export class SignalrService {
   listenForQuarterUpdates(): void {
     this.hubConnection.off('QuarterUpdated');
     this.hubConnection.on('QuarterUpdated', (quarter: number) => {
-      this._currentQuarterUpdated.next(quarter); 
+      this._currentQuarterUpdated.next(quarter);
+    });
+  }
+
+  private listenToMatchEventsUpdates(): void {
+    this.hubConnection.off('MatchEventsUpdated');
+    this.hubConnection.on('MatchEventsUpdated', (matchId: number) => {
+      this.matchEventsUpdatedSource.next(matchId);
     });
   }
 

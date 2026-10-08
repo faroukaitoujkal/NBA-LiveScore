@@ -1,4 +1,4 @@
-using NBA_LiveScore.Server.Data;
+ï»¿using NBA_LiveScore.Server.Data;
 using NBA_LiveScore.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -52,7 +52,7 @@ namespace NBA_LiveScore.Server.Controllers
         [HttpPost("create-from-match/{matchId}")]
         public async Task<ActionResult<TimeoutMatch>> CreateTimeoutFromMatch(int matchId, [FromBody] TimeoutMatch timeout)
         {
-            // Récupérer le match correspondant à matchId
+            // RÃ©cupÃ©rer le match correspondant Ã  matchId
             var match = await _context.Matches.FindAsync(matchId);
             if (match == null)
             {
@@ -64,7 +64,7 @@ namespace NBA_LiveScore.Server.Controllers
 
             timeout.Match = null;
 
-            // Ajouter et sauvegarder dans la base de données
+            // Ajouter et sauvegarder dans la base de donnÃ©es
             _context.Timeouts.Add(timeout);
             await _context.SaveChangesAsync();
 
@@ -79,6 +79,7 @@ namespace NBA_LiveScore.Server.Controllers
             };
 
             await _hubContext.Clients.All.SendAsync("TimeoutCreated", timeoutData);
+            await _hubContext.Clients.All.SendAsync("MatchEventsUpdated", timeout.MatchId);
 
             return CreatedAtAction(nameof(GetTimeout), new { id = timeout.Id }, timeout);
         }
@@ -133,3 +134,5 @@ namespace NBA_LiveScore.Server.Controllers
         }
     }
 }
+
+

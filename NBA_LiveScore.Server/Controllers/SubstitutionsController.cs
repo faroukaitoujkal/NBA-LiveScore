@@ -1,3 +1,4 @@
+ï»¿using Microsoft.AspNetCore.SignalR;
 using NBA_LiveScore.Server.Data;
 using NBA_LiveScore.Server.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -11,22 +12,24 @@ namespace NBA_LiveScore.Server.Controllers
     {
         private readonly NBAContext _context;
 
-        public SubstitutionsController(NBAContext context)
+        private readonly Microsoft.AspNetCore.SignalR.IHubContext<NBAHub> _hubContext;
+        public SubstitutionsController(NBAContext context, Microsoft.AspNetCore.SignalR.IHubContext<NBAHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
-        // Récupérer toutes les substitutions
+        // RÃ©cupÃ©rer toutes les substitutions
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Substitution>>> GetSubstitutions()
         {
             return await _context.Substitutions
-                .Include(s => s.PlayerIn)  // Inclure les détails du joueur entrant
-                .Include(s => s.PlayerOut) // Inclure les détails du joueur sortant
+                .Include(s => s.PlayerIn)  // Inclure les dÃ©tails du joueur entrant
+                .Include(s => s.PlayerOut) // Inclure les dÃ©tails du joueur sortant
                 .ToListAsync();
         }
 
-        // Récupérer une substitution par son ID
+        // RÃ©cupÃ©rer une substitution par son ID
         [HttpGet("{id}")]
         public async Task<ActionResult<Substitution>> GetSubstitution(int id)
         {
@@ -60,39 +63,40 @@ namespace NBA_LiveScore.Server.Controllers
         {
             if (substitution.PlayerInId == substitution.PlayerOutId)
             {
-                return BadRequest("Un joueur ne peut pas entrer et sortir en même temps.");
+                return BadRequest("Un joueur ne peut pas entrer et sortir en mÃªme temps.");
             }
 
-            // Vérifier que les joueurs existent dans la base de données
+            // VÃ©rifier que les joueurs existent dans la base de donnÃ©es
             var playerIn = await _context.Players.FindAsync(substitution.PlayerInId);
             var playerOut = await _context.Players.FindAsync(substitution.PlayerOutId);
 
             if (playerIn == null || playerOut == null)
             {
-                return NotFound("Un ou plusieurs joueurs non trouvés.");
+                return NotFound("Un ou plusieurs joueurs non trouvÃ©s.");
             }
 
-            // Vérifier que matchId est bien défini
+            // VÃ©rifier que matchId est bien dÃ©fini
             if (substitution.MatchId == 0)
             {
-                return BadRequest("Le matchId ne peut pas être nul ou invalide.");
+                return BadRequest("Le matchId ne peut pas Ãªtre nul ou invalide.");
             }
 
-            // Vérifier si le match existe
+            // VÃ©rifier si le match existe
             var match = await _context.Matches.FindAsync(substitution.MatchId);
             if (match == null)
             {
-                return NotFound("Le match spécifié n'a pas été trouvé.");
+                return NotFound("Le match spÃ©cifiÃ© n'a pas Ã©tÃ© trouvÃ©.");
             }
 
-            // Ajouter la substitution à la base de données
+            // Ajouter la substitution Ã  la base de donnÃ©es
             _context.Substitutions.Add(substitution);
             await _context.SaveChangesAsync();
+            await _hubContext.Clients.All.SendAsync("MatchEventsUpdated", substitution.MatchId);
 
             return CreatedAtAction("GetSubstitution", new { id = substitution.Id }, substitution);
         }
 
-        // Mettre à jour une substitution existante
+        // Mettre Ã  jour une substitution existante
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSubstitution(int id, Substitution substitution)
         {
@@ -101,19 +105,19 @@ namespace NBA_LiveScore.Server.Controllers
                 return BadRequest();
             }
 
-            // Vérifier si la substitution existe dans la base
+            // VÃ©rifier si la substitution existe dans la base
             var existingSubstitution = await _context.Substitutions.FindAsync(id);
             if (existingSubstitution == null)
             {
                 return NotFound();
             }
 
-            // Vérifier que les joueurs sont valides
+            // VÃ©rifier que les joueurs sont valides
             var playerIn = await _context.Players.FindAsync(substitution.PlayerInId);
             var playerOut = await _context.Players.FindAsync(substitution.PlayerOutId);
             if (playerIn == null || playerOut == null)
             {
-                return NotFound("Un ou plusieurs joueurs non trouvés.");
+                return NotFound("Un ou plusieurs joueurs non trouvÃ©s.");
             }
 
             _context.Entry(substitution).State = EntityState.Modified;
@@ -153,10 +157,11 @@ namespace NBA_LiveScore.Server.Controllers
             return NoContent();
         }
 
-        // Vérifier si une substitution existe dans la base de données
+        // VÃ©rifier si une substitution existe dans la base de donnÃ©es
         private bool SubstitutionExists(int id)
         {
             return _context.Substitutions.Any(e => e.Id == id);
         }
     }
 }
+

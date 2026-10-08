@@ -1,4 +1,4 @@
-using NBA_LiveScore.Server.Data;
+﻿using NBA_LiveScore.Server.Data;
 using NBA_LiveScore.Server.Models;
 using NBA_LiveScore.Server.DTOs;
 using Microsoft.AspNetCore.Mvc;
@@ -81,17 +81,21 @@ namespace NBA_LiveScore.Server.Controllers
         [HttpGet("{id}/scores")]
         public async Task<ActionResult<object>> GetMatchScores(int id)
         {
-            var match = await _context.Matches.FindAsync(id);
-            if (match == null)
+            var matchScores = await _context.Matches
+                .Where(m => m.Id == id)
+                .Select(m => new
+                {
+                    HomeTeamScore = m.HomeTeamScore,
+                    AwayTeamScore = m.AwayTeamScore
+                })
+                .FirstOrDefaultAsync();
+
+            if (matchScores == null)
             {
                 return NotFound($"Match avec ID {id} introuvable.");
             }
 
-            return new
-            {
-                HomeTeamScore = match.HomeTeamScore,
-                AwayTeamScore = match.AwayTeamScore
-            };
+            return Ok(matchScores);
         }
 
         [HttpPost]
@@ -136,12 +140,13 @@ namespace NBA_LiveScore.Server.Controllers
             if (match == null) return NotFound();
 
             if (match.Status == MatchStatus.Finished)
-                return BadRequest("Le match est déjà terminé.");
+                return BadRequest("Le match est dÃ©jÃ  terminÃ©.");
 
             match.Status = MatchStatus.Finished;
             await _context.SaveChangesAsync();
 
             await _hubContext.Clients.All.SendAsync("MatchStatusUpdated", id, MatchStatus.Finished);
+            await _hubContext.Clients.All.SendAsync("MatchEventsUpdated", id);
 
             return NoContent(); 
         }
@@ -279,3 +284,4 @@ namespace NBA_LiveScore.Server.Controllers
         private bool MatchExists(int id) => _context.Matches.Any(e => e.Id == id);
     }
 }
+

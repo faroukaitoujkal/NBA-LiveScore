@@ -21,8 +21,29 @@ export class StandingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.standingService.getStandings().subscribe({
-      next: (data: any) => {
-        this.standings = data;
+      next: (data: Standing[]) => {
+        // Calculate GP and PCT if they are missing or zero from the API
+        this.standings = data.map(team => {
+          const wins = team.wins || 0;
+          const losses = team.losses || 0;
+          const gp = wins + losses;
+          const pct = gp > 0 ? (wins / gp) : 0;
+          
+          return {
+            ...team,
+            gamesPlayed: team.gamesPlayed || gp,
+            winPercentage: team.winPercentage || pct
+          };
+        });
+        
+        // Ensure standings are properly sorted by win percentage descending, then wins descending
+        this.standings.sort((a, b) => {
+          if (b.winPercentage !== a.winPercentage) {
+             return b.winPercentage - a.winPercentage;
+          }
+          return b.wins - a.wins;
+        });
+
         this.isLoading = false;
         this.hasError = false;
         this.cdr.markForCheck();

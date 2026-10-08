@@ -1,3 +1,4 @@
+ï»¿using Microsoft.AspNetCore.SignalR;
 using NBA_LiveScore.Server.Data;
 using NBA_LiveScore.Server.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -15,19 +16,21 @@ namespace NBA_LiveScore.Server.Controllers
     {
         private readonly NBAContext _context;
 
-        public FoulsController(NBAContext context)
+        private readonly Microsoft.AspNetCore.SignalR.IHubContext<NBAHub> _hubContext;
+        public FoulsController(NBAContext context, Microsoft.AspNetCore.SignalR.IHubContext<NBAHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
-        // Récupérer toutes les fautes
+        // RÃ©cupÃ©rer toutes les fautes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Foul>>> GetFouls()
         {
             return await _context.Fouls.Include(f => f.Player).ToListAsync();
         }
 
-        // Récupérer une faute spécifique par ID
+        // RÃ©cupÃ©rer une faute spÃ©cifique par ID
         [HttpGet("{id}")]
         public async Task<ActionResult<Foul>> GetFoul(int id)
         {
@@ -60,11 +63,11 @@ namespace NBA_LiveScore.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<Foul>> PostFoul(Foul foul)
         {
-            // Vérifier si le joueur existe
+            // VÃ©rifier si le joueur existe
             var player = await _context.Players.FindAsync(foul.PlayerId);
             if (player == null)
             {
-                return NotFound(new { message = "Joueur non trouvé." });
+                return NotFound(new { message = "Joueur non trouvÃ©." });
             }
 
             var entry = _context.Entry(player);
@@ -76,14 +79,15 @@ namespace NBA_LiveScore.Server.Controllers
             // Associer la faute au joueur existant
             foul.Player = player;
 
-            // Ajouter la faute à la base de données
+            // Ajouter la faute Ã  la base de donnÃ©es
             _context.Fouls.Add(foul);
             await _context.SaveChangesAsync();
+            await _hubContext.Clients.All.SendAsync("MatchEventsUpdated", foul.MatchId);
 
             return CreatedAtAction("GetFoul", new { id = foul.Id }, foul);
         }
 
-        // Mettre à jour une faute existante
+        // Mettre Ã  jour une faute existante
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFoul(int id, Foul foul)
         {
@@ -135,3 +139,5 @@ namespace NBA_LiveScore.Server.Controllers
         }
     }
 }
+
+

@@ -126,5 +126,68 @@ namespace NBA_LiveScore.Server.Controllers
         {
             return _context.Teams.Any(e => e.Id == id);
         }
+
+        [HttpPost("sync-coaches")]
+        public async Task<IActionResult> SyncCoaches()
+        {
+            try
+            {
+                using var httpClient = new System.Net.Http.HttpClient();
+                
+                // First get all teams to get their ESPN IDs
+                var teamsResponse = await httpClient.GetStringAsync("https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams?limit=40");
+                var teamsDoc = System.Text.Json.JsonDocument.Parse(teamsResponse);
+                var sportsArray = teamsDoc.RootElement.GetProperty("sports")[0];
+                var leaguesArray = sportsArray.GetProperty("leagues")[0];
+                var espnTeams = leaguesArray.GetProperty("teams");
+
+                var dbTeams = await _context.Teams.ToListAsync();
+                int updatedCount = 0;
+
+                foreach (var teamEl in espnTeams.EnumerateArray())
+                {
+                    var t = teamEl.GetProperty("team");
+                    var espnId = t.GetProperty("id").GetString();
+                    var displayName = t.GetProperty("displayName").GetString();
+
+                    var dbTeam = dbTeams.FirstOrDefault(db => db.Name == displayName);
+                    if (dbTeam != null && !string.IsNullOrEmpty(espnId))
+                    {
+                        // Fetch roster for this team to get the coach
+                        try
+                        {
+                            var rosterResponse = await httpClient.GetStringAsync($"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/{espnId}/roster");
+                            var rosterDoc = System.Text.Json.JsonDocument.Parse(rosterResponse);
+                            
+                            if (rosterDoc.RootElement.TryGetProperty("coach", out var coachesArray) && coachesArray.GetArrayLength() > 0)
+                            {
+                                var coachObj = coachesArray[0];
+                                var firstName = coachObj.GetProperty("firstName").GetString();
+                                var lastName = coachObj.GetProperty("lastName").GetString();
+                                
+                                dbTeam.CoachName = $"{firstName} {lastName}".Trim();
+                                updatedCount++;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            // Skip if fails to fetch roster
+                        }
+                    }
+                }
+
+                if (updatedCount > 0)
+                {
+                    await _context.SaveChangesAsync();
+                    _cache.Remove(TeamsCacheKey); // Invalidate cache
+                }
+
+                return Ok(new { message = $"Successfully synced {updatedCount} coaches." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error syncing coaches.", error = ex.Message });
+            }
+        }
     }
 }

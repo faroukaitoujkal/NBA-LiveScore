@@ -1,4 +1,4 @@
-﻿using NBA_LiveScore.Server.Data;
+using NBA_LiveScore.Server.Data;
 using NBA_LiveScore.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -23,7 +23,7 @@ namespace NBA_LiveScore.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PlayerScore>>> GetPlayerScores()
         {
-            return await _context.PlayerScores.ToListAsync();
+            return await _context.PlayerScores.AsNoTracking().ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -43,6 +43,7 @@ namespace NBA_LiveScore.Server.Controllers
         public async Task<ActionResult<IEnumerable<PlayerScore>>> GetScoresByMatch(int matchId)
         {
             var scores = await _context.PlayerScores
+                                       .AsNoTracking()
                                        .Where(ps => ps.MatchId == matchId)
                                        .ToListAsync();
 

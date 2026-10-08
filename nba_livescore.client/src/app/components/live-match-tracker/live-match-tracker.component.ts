@@ -34,7 +34,7 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
   match: Match | null = null;
   loading = true;
   MatchStatus = MatchStatus;
-  
+
   recentEvents: PlayEvent[] = [];
   selectedHomePlayerId: number | null = null;
   selectedAwayPlayerId: number | null = null;
@@ -52,6 +52,7 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
   timeoutDuration: string = '01:00';
 
   private scoreSubscription: Subscription | undefined;
+  private matchEventsSubscription: Subscription | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -61,19 +62,25 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
     private timeoutService: TimeoutService,
     private subService: SubstitutionService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadMatch(+id);
-      
+
       this.signalRService.startConnection(+id);
-      
+
       this.scoreSubscription = this.signalRService.scoreUpdated$.subscribe((data: any) => {
         if (data && data.matchId === +id) {
-           this.handleScoreUpdate(data);
-           this.cdr.detectChanges();
+          this.handleScoreUpdate(data);
+          this.cdr.detectChanges();
+        }
+      });
+
+      this.matchEventsSubscription = this.signalRService.matchEventsUpdated$.subscribe((matchId: number) => {
+        if (matchId === +id) {
+           this.loadMatch(matchId, false);
         }
       });
     }
@@ -81,7 +88,7 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
 
   loadMatch(id: number, showLoading = true) {
     if (showLoading) this.loading = true;
-    
+
     // Fetch match and all historical events simultaneously
     forkJoin({
       match: this.matchService.getMatch(id),
@@ -92,18 +99,18 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: (res: any) => {
         this.match = res.match;
-        
+
         // Setup default selected players for the encoder panel
         if (this.match?.homeTeam?.players?.length && !this.selectedHomePlayerId) {
-           this.selectedHomePlayerId = this.match.homeTeam.players[0].id;
+          this.selectedHomePlayerId = this.match.homeTeam.players[0].id;
         }
         if (this.match?.awayTeam?.players?.length && !this.selectedAwayPlayerId) {
-           this.selectedAwayPlayerId = this.match.awayTeam.players[0].id;
+          this.selectedAwayPlayerId = this.match.awayTeam.players[0].id;
         }
 
         // Map historical scores to our play-by-play events, sorted newest first
         let allEvents: PlayEvent[] = [];
-        
+
         if (res.scores && !res.scores.error) {
           allEvents = [...allEvents, ...res.scores.map((s: any) => this.mapScoreToEvent(s))];
         }
@@ -122,12 +129,14 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
           if (a.timestamp && b.timestamp) return b.timestamp - a.timestamp;
           return 0; // In a real app we'd parse the MM:SS or use an auto-incrementing ID
         });
-        
+
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error loading match', err);
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -150,33 +159,33 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
 
     // If player is not populated by backend, find it locally
     if (!player && this.match) {
-       const homeP = this.match.homeTeam?.players?.find(p => p.id === score.playerId);
-       if (homeP) {
-          player = homeP;
-          isHome = true;
-          teamName = this.match.homeTeam?.name || '';
-       } else {
-          const awayP = this.match.awayTeam?.players?.find(p => p.id === score.playerId);
-          if (awayP) {
-             player = awayP;
-             isHome = false;
-             teamName = this.match.awayTeam?.name || '';
-          }
-       }
+      const homeP = this.match.homeTeam?.players?.find(p => p.id === score.playerId);
+      if (homeP) {
+        player = homeP;
+        isHome = true;
+        teamName = this.match.homeTeam?.name || '';
+      } else {
+        const awayP = this.match.awayTeam?.players?.find(p => p.id === score.playerId);
+        if (awayP) {
+          player = awayP;
+          isHome = false;
+          teamName = this.match.awayTeam?.name || '';
+        }
+      }
     } else {
-       isHome = this.match?.homeTeamId === score.player?.teamId;
-       teamName = isHome ? this.match?.homeTeam?.name || '' : this.match?.awayTeam?.name || '';
+      isHome = this.match?.homeTeamId === score.player?.teamId;
+      teamName = isHome ? this.match?.homeTeam?.name || '' : this.match?.awayTeam?.name || '';
     }
 
     return {
-       id: score.id,
-       timestamp: new Date(score.scoreTime).getTime(),
-       timeString: new Date(score.scoreTime).toLocaleTimeString(),
-       teamName: teamName,
-       translationKey: 'LIVE_TRACKER.EVENTS.SCORE',
-       translationParams: { player: player?.name || 'Unknown', points: score.points },
-       isHome: isHome,
-       type: 'SCORE'
+      id: score.id,
+      timestamp: new Date(score.scoreTime).getTime(),
+      timeString: new Date(score.scoreTime).toLocaleTimeString(),
+      teamName: teamName,
+      translationKey: 'LIVE_TRACKER.EVENTS.SCORE',
+      translationParams: { player: player?.name || 'Unknown', points: score.points },
+      isHome: isHome,
+      type: 'SCORE'
     };
   }
 
@@ -184,16 +193,16 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
     const isHome = this.match?.homeTeam?.players?.some((p: any) => p.id === foul.playerId) || false;
     const teamName = isHome ? this.match?.homeTeam?.name : this.match?.awayTeam?.name;
     const player = isHome ? this.match?.homeTeam?.players?.find((p: any) => p.id === foul.playerId) : this.match?.awayTeam?.players?.find((p: any) => p.id === foul.playerId);
-    
+
     return {
-       id: foul.id,
-       timestamp: Date.now(), // Fallback
-       timeString: foul.gameTime || '00:00',
-       teamName: teamName || 'Unknown Team',
-       translationKey: 'LIVE_TRACKER.EVENTS.FOUL',
-       translationParams: { type: foul.foulType, player: player?.name || 'Unknown' },
-       isHome: isHome,
-       type: 'FOUL'
+      id: foul.id,
+      timestamp: Date.now(), // Fallback
+      timeString: foul.gameTime || '00:00',
+      teamName: teamName || 'Unknown Team',
+      translationKey: 'LIVE_TRACKER.EVENTS.FOUL',
+      translationParams: { type: foul.foulType, player: player?.name || 'Unknown' },
+      isHome: isHome,
+      type: 'FOUL'
     };
   }
 
@@ -204,14 +213,14 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
     const playerOut = isHome ? this.match?.homeTeam?.players?.find((p: any) => p.id === sub.playerOutId) : this.match?.awayTeam?.players?.find((p: any) => p.id === sub.playerOutId);
 
     return {
-       id: sub.id,
-       timestamp: Date.now(),
-       timeString: sub.gameTime || '00:00',
-       teamName: teamName || 'Unknown Team',
-       translationKey: 'LIVE_TRACKER.EVENTS.SUB',
-       translationParams: { playerIn: playerIn?.name || 'Unknown', playerOut: playerOut?.name || 'Unknown' },
-       isHome: isHome,
-       type: 'SUB'
+      id: sub.id,
+      timestamp: Date.now(),
+      timeString: sub.gameTime || '00:00',
+      teamName: teamName || 'Unknown Team',
+      translationKey: 'LIVE_TRACKER.EVENTS.SUB',
+      translationParams: { playerIn: playerIn?.name || 'Unknown', playerOut: playerOut?.name || 'Unknown' },
+      isHome: isHome,
+      type: 'SUB'
     };
   }
 
@@ -219,14 +228,14 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
     // Assuming timeout is associated with a match level, not specifically player/team in the model
     // but usually we can infer. For now we just show a general timeout.
     return {
-       id: timeout.id,
-       timestamp: Date.now(),
-       timeString: timeout.gameTime || '00:00',
-       teamName: 'MATCH',
-       translationKey: 'LIVE_TRACKER.EVENTS.TIMEOUT',
-       translationParams: { duration: timeout.duration || 'Unknown' },
-       isHome: false,
-       type: 'TIMEOUT'
+      id: timeout.id,
+      timestamp: Date.now(),
+      timeString: timeout.gameTime || '00:00',
+      teamName: 'MATCH',
+      translationKey: 'LIVE_TRACKER.EVENTS.TIMEOUT',
+      translationParams: { duration: timeout.duration || 'Unknown' },
+      isHome: false,
+      type: 'TIMEOUT'
     };
   }
 
@@ -236,34 +245,34 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
       this.match.awayTeamScore = data.awayTeamScore;
     }
     if (data.playerScore) {
-       this.recentEvents.unshift(this.mapScoreToEvent(data.playerScore));
+      this.recentEvents.unshift(this.mapScoreToEvent(data.playerScore));
     }
   }
 
   addRealScore(team: 'home' | 'away', points: number) {
     if (!this.match || this.isSubmitting) return;
-    
+
     const playerId = team === 'home' ? this.selectedHomePlayerId : this.selectedAwayPlayerId;
     if (!playerId) {
-       this.showFeedback("LIVE_TRACKER.FEEDBACK.SELECT_PLAYER", true);
-       return;
+      this.showFeedback("LIVE_TRACKER.FEEDBACK.SELECT_PLAYER", true);
+      return;
     }
 
     this.isSubmitting = true;
     this.matchService.addScore({
-       matchId: this.match.id,
-       playerId: playerId,
-       points: points
+      matchId: this.match.id,
+      playerId: playerId,
+      points: points
     }).subscribe({
-       next: (res) => {
-         this.isSubmitting = false;
-         // Note: SignalR will handle the UI update automatically!
-       },
-       error: (err) => {
-         console.error(err);
-         this.isSubmitting = false;
-         this.showFeedback("LIVE_TRACKER.FEEDBACK.SCORE_ERROR", true);
-       }
+      next: (res) => {
+        this.isSubmitting = false;
+        // Note: SignalR will handle the UI update automatically!
+      },
+      error: (err) => {
+        console.error(err);
+        this.isSubmitting = false;
+        this.showFeedback("LIVE_TRACKER.FEEDBACK.SCORE_ERROR", true);
+      }
     });
   }
 
@@ -308,9 +317,9 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
       gameTime: this.gameTimeInput || "00:00",
       matchId: this.match.id
     }).subscribe({
-      next: (res: any) => { 
-        this.isSubmitting = false; 
-        this.showFeedback("LIVE_TRACKER.FEEDBACK.SUB_ADDED"); 
+      next: (res: any) => {
+        this.isSubmitting = false;
+        this.showFeedback("LIVE_TRACKER.FEEDBACK.SUB_ADDED");
         this.recentEvents.unshift(this.mapSubToEvent(res || {
           playerInId: this.selectedPlayerInId, playerOutId: this.selectedPlayerOutId, gameTime: this.gameTimeInput
         }));
@@ -328,9 +337,9 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
       gameTime: this.gameTimeInput || "00:00",
       duration: this.timeoutDuration
     }).subscribe({
-      next: (res: any) => { 
-        this.isSubmitting = false; 
-        this.showFeedback("LIVE_TRACKER.FEEDBACK.TIMEOUT_ADDED"); 
+      next: (res: any) => {
+        this.isSubmitting = false;
+        this.showFeedback("LIVE_TRACKER.FEEDBACK.TIMEOUT_ADDED");
         this.recentEvents.unshift(this.mapTimeoutToEvent(res || {
           duration: this.timeoutDuration, gameTime: this.gameTimeInput
         }));
@@ -344,21 +353,21 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
 
   nextQuarter(forceOvertime = false) {
     if (!this.match || this.isSubmitting) return;
-    
+
     if (this.match.currentQuarter >= 4 && !forceOvertime) {
-       this.showOvertimeConfirm = true;
-       document.body.style.overflow = 'hidden';
-       return;
+      this.showOvertimeConfirm = true;
+      document.body.style.overflow = 'hidden';
+      return;
     }
 
     this.showOvertimeConfirm = false;
     document.body.style.overflow = '';
     this.isSubmitting = true;
     this.matchService.updateCurrentQuarter(this.match.id, this.match.currentQuarter + 1).subscribe({
-      next: () => { 
-        this.isSubmitting = false; 
+      next: () => {
+        this.isSubmitting = false;
         if (this.match) this.match.currentQuarter++;
-        this.cdr.markForCheck(); 
+        this.cdr.markForCheck();
       },
       error: (err) => { console.error(err); this.isSubmitting = false; this.showFeedback("LIVE_TRACKER.FEEDBACK.UPDATE_ERROR", true); }
     });
@@ -373,11 +382,11 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
     if (!this.match || this.isSubmitting) return;
     this.isSubmitting = true;
     this.matchService.updateMatchStatus(this.match.id, true).subscribe({
-      next: () => { 
-        this.isSubmitting = false; 
+      next: () => {
+        this.isSubmitting = false;
         if (this.match) this.match.status = MatchStatus.Finished;
         this.showFeedback("LIVE_TRACKER.FEEDBACK.MATCH_FINISHED");
-        this.cdr.markForCheck(); 
+        this.cdr.markForCheck();
       },
       error: (err) => { console.error(err); this.isSubmitting = false; this.showFeedback("LIVE_TRACKER.FEEDBACK.UPDATE_ERROR", true); }
     });
@@ -386,6 +395,9 @@ export class LiveMatchTrackerComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.scoreSubscription) {
       this.scoreSubscription.unsubscribe();
+    }
+    if (this.matchEventsSubscription) {
+      this.matchEventsSubscription.unsubscribe();
     }
     document.body.style.overflow = '';
   }
