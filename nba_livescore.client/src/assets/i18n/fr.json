@@ -7,7 +7,11 @@
     "SECRET_KEY_PLACEHOLDER": "Clé Secrète...",
     "UNLOCK_BUTTON": "Déverrouiller le système",
     "LOGOUT_CONFIRM": "Voulez-vous vous déconnecter du mode administrateur ?",
-    "LOGIN_ERROR": "Clé incorrecte. Accès refusé."
+    "LOGIN_ERROR": "Clé incorrecte. Accès refusé.",
+    "LOGOUT_MODAL_TITLE": "Déconnexion",
+    "LOGOUT_MODAL_DESC": "Êtes-vous sûr de vouloir vous déconnecter du mode administrateur ?",
+    "CANCEL_BUTTON": "Annuler",
+    "LOGOUT_BUTTON": "Se déconnecter"
   },
   "NAV": {
     "HOME": "Accueil",

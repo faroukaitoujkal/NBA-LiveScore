@@ -7,7 +7,11 @@
     "SECRET_KEY_PLACEHOLDER": "Secret Key...",
     "UNLOCK_BUTTON": "Unlock System",
     "LOGOUT_CONFIRM": "Do you want to log out from admin mode?",
-    "LOGIN_ERROR": "Incorrect key. Access denied."
+    "LOGIN_ERROR": "Incorrect key. Access denied.",
+    "LOGOUT_MODAL_TITLE": "Logout",
+    "LOGOUT_MODAL_DESC": "Are you sure you want to logout from administrator mode?",
+    "CANCEL_BUTTON": "Cancel",
+    "LOGOUT_BUTTON": "Logout"
   },
   "NAV": {
     "HOME": "Home",

@@ -153,4 +153,29 @@
       </div>
     </div>
   </div>
+
+  <!-- Admin Logout Modal -->
+  <div *ngIf="showAdminLogoutModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in">
+    <div class="bg-brand-card border-2 border-brand-accent rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 relative transform transition-all">
+      <button (click)="closeAdminLogoutModal()" class="absolute top-4 right-4 text-brand-text-muted hover:text-brand-text transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+      
+      <div class="flex items-center mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-brand-accent mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+        <h3 class="font-sports text-2xl uppercase tracking-widest font-bold text-brand-text">{{ 'ADMIN.LOGOUT_MODAL_TITLE' | translate }}</h3>
+      </div>
+      
+      <p class="text-brand-text-muted text-sm mb-8">{{ 'ADMIN.LOGOUT_MODAL_DESC' | translate }}</p>
+      
+      <div class="flex space-x-4">
+        <button (click)="closeAdminLogoutModal()" class="flex-1 bg-brand-dark hover:bg-brand-card-hover text-brand-text border border-brand-border font-sports uppercase tracking-widest font-bold py-3 rounded-lg transition-colors">
+          {{ 'ADMIN.CANCEL_BUTTON' | translate }}
+        </button>
+        <button (click)="confirmLogout()" class="flex-1 bg-brand-accent hover:bg-brand-danger text-white font-sports uppercase tracking-widest font-bold py-3 rounded-lg transition-colors">
+          {{ 'ADMIN.LOGOUT_BUTTON' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

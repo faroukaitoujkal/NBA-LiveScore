@@ -17,6 +17,7 @@ export class LayoutComponent implements OnInit {
   isMenuOpen = false;
   isAdmin = false;
   showAdminModal = false;
+  showAdminLogoutModal = false;
   adminKeyInput = '';
   isLoggingIn = false;
 
@@ -45,16 +46,23 @@ export class LayoutComponent implements OnInit {
 
   promptAdminKey() {
     if (this.isAdmin) {
-      if (confirm(this.translate.instant('ADMIN.LOGOUT_CONFIRM'))) {
-        localStorage.removeItem('adminApiKey');
-        this.isAdmin = false;
-        window.location.reload();
-      }
+      this.showAdminLogoutModal = true;
       return;
     }
 
     this.showAdminModal = true;
     this.adminKeyInput = '';
+  }
+
+  closeAdminLogoutModal() {
+    this.showAdminLogoutModal = false;
+  }
+
+  confirmLogout() {
+    localStorage.removeItem('adminApiKey');
+    this.isAdmin = false;
+    this.showAdminLogoutModal = false;
+    window.location.reload();
   }
 
   closeAdminModal() {
